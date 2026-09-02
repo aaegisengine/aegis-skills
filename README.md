@@ -19,7 +19,7 @@
 ---
 
 Doze skills de Claude para trading, em duas famílias: **7 de leitura de tela** (você cola o
-print, recebe estrutura) e **5 de mesa** (o trabalho que acontece **antes** e **depois** do
+print, recebe estrutura) e **5 de plano e validação** (o trabalho que acontece **antes** e **depois** do
 clique, planejar, checar a agenda, dimensionar, validar). Todas com a honestidade embutida
 na engenharia:
 
@@ -31,7 +31,7 @@ na engenharia:
   o que **você** cola e o que dá pra verificar na web. Quem te vende "IA que opera sozinha"
   está te vendendo o guru de sempre com casca nova.
 
-## As 5 de mesa: planejar, dimensionar, validar
+## As 5 de plano e validação: antes e depois do clique
 
 O trabalho fora do gráfico, onde o day trade é ganho ou perdido:
 
@@ -102,7 +102,7 @@ transformam a hipótese em número. É a mesa inteira de uma operação, sem nin
 
 ## Instalação
 
-Cada skill é uma pasta com um `SKILL.md` (as de mesa trazem também `references/` e scripts).
+Cada skill é uma pasta com um `SKILL.md` (as cinco de plano trazem também `references/` e scripts).
 Dois caminhos:
 
 ### Claude (claude.ai / app): planos pagos

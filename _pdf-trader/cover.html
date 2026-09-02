@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>AEGIS SKILLS · antes e depois do clique: cover 16:9</title>
+<link rel="stylesheet" href="fonts/_fontes-embed-v3.css">
+<link rel="stylesheet" href="fonts/_fontes-embed-anthropic.css">
+<link rel="stylesheet" href="fonts/_fontes-embed-inter.css">
+<link rel="stylesheet" href="fonts/_fontes-embed.css">
+<style>
+  :root{ --midnight:#16151D; --paper:#F4F5F0; --roxao:#BF00FF; --lilac:#E0B0FF; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:#000;}
+  .cover{
+    width:1280px; height:720px; position:relative; overflow:hidden;
+    background:var(--midnight); font-family:'Inter',sans-serif;
+  }
+  /* o banner dele em full bleed; o sujeito mora na direita */
+  .cover img.hero{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    object-position:center 30%;}
+  /* scrim lateral: o texto assenta na metade esquerda, onde o estádio é fundo */
+  .scrim{position:absolute;inset:0;
+    background:linear-gradient(90deg, rgba(22,21,29,.95) 0%, rgba(22,21,29,.88) 30%, rgba(22,21,29,.66) 48%, rgba(22,21,29,0) 62%);}
+  .base{position:absolute;left:0;right:0;bottom:0;height:110px;
+    background:linear-gradient(180deg, rgba(22,21,29,0), rgba(22,21,29,.72));}
+  .fio{position:absolute;top:0;left:0;right:0;height:8px;z-index:6;
+    background:linear-gradient(90deg,#8E2CC6,#BF00FF,#E0B0FF);}
+
+  .txt{position:absolute; left:64px; top:60px; bottom:52px; width:640px; z-index:5;
+    display:flex; flex-direction:column;}
+  .lk{height:26px;width:auto;align-self:flex-start;opacity:.94;margin-bottom:auto;}
+
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.24em;
+    color:var(--lilac);text-transform:uppercase;margin-bottom:16px;}
+  h1{font-family:'Domine',serif;font-weight:800;font-size:98px;line-height:.98;
+    color:var(--paper);letter-spacing:-.015em;margin-bottom:6px;}
+  .serifa{font-family:'Anthropic Serif Display',serif;font-size:56px;line-height:1.05;
+    color:var(--lilac);margin-bottom:22px;}
+  .sub{font-family:'Anthropic Serif Display',serif;font-size:27px;line-height:1.32;
+    color:var(--paper);max-width:560px;margin-bottom:24px;}
+  .sub .hl{color:var(--lilac);}
+
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;max-width:560px;}
+  .pills span{font-family:'Inter',sans-serif;font-weight:600;font-size:15px;
+    color:var(--lilac);border:1px solid rgba(224,176,255,.42);border-radius:999px;
+    padding:5px 13px;white-space:nowrap;}
+
+  .rodape{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.16em;
+    color:rgba(244,245,240,.6);text-transform:uppercase;}
+  .rodape b{color:var(--lilac);font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <img class="hero" src="assets/banner.png" alt="">
+  <div class="scrim"></div>
+  <div class="base"></div>
+  <div class="fio"></div>
+
+  <div class="txt">
+    <img class="lk" src="assets/aegis_ai_lockup_vapor_lilac.png" alt="AEGIS.AI">
+    <div class="eyebrow">5 skills · 30 prompts · para Claude</div>
+    <h1>AEGIS SKILLS</h1>
+    <div class="serifa">antes e depois do clique</div>
+    <p class="sub">Plano, agenda, tese, tamanho e backtest: o trabalho que decide o trade
+      fora do gráfico. <span class="hl">Nenhuma dá sinal, de propósito.</span></p>
+    <div class="pills">
+      <span>plano do dia</span><span>radar da sessão</span><span>swing</span>
+      <span>cripto + liquidação</span><span>backtest + Monte Carlo</span>
+    </div>
+    <p class="rodape">Em português · Grátis · <b>Nunca um call</b></p>
+  </div>
+</div>
+
+</body>
+</html>

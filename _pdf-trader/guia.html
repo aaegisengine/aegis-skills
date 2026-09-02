@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>AEGIS SKILLS · 5 skills pra trader · 30 Prompts</title>
+<link rel="stylesheet" href="fonts/_fontes-embed-v3.css">
+<link rel="stylesheet" href="fonts/_fontes-embed-anthropic.css">
+<link rel="stylesheet" href="fonts/_fontes-embed-inter.css">
+<link rel="stylesheet" href="fonts/_fontes-embed-henko.css">
+<link rel="stylesheet" href="fonts/_fontes-embed.css">
+<style>
+  :root{
+    --midnight:#16151D; --paper:#F4F5F0; --ink:#2B2B2B;
+    --roxao:#BF00FF; --lilac:#E0B0FF;
+    --dim:#6D6C66; --border:#E0DFD4; --card:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:#0c0c10;}
+  .page{
+    width:816px;height:1056px;position:relative;overflow:hidden;
+    background:var(--paper);color:var(--ink);
+    font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.55;
+    page-break-after:always;
+  }
+  .page.dark{background:var(--midnight);color:var(--paper);}
+
+  /* chrome */
+  .fio{position:absolute;top:0;left:0;right:0;height:8px;
+    background:linear-gradient(90deg,#8E2CC6,#BF00FF,#E0B0FF);}
+  .capa .fio{height:12px;}
+  .foot{position:absolute;bottom:26px;left:64px;right:64px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.16em;
+    color:rgba(43,43,43,.48);}
+  .dark .foot{color:rgba(224,176,255,.55);}
+
+  .pad{padding:88px 64px 0;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;
+    color:var(--roxao);text-transform:uppercase;margin-bottom:14px;}
+  .dark .eyebrow{color:var(--lilac);}
+  h2{font-family:'Domine',serif;font-weight:700;font-size:33px;line-height:1.18;
+    margin-bottom:18px;letter-spacing:-.01em;}
+  .lede{font-family:'Anthropic Serif Display',serif;font-weight:400;font-size:21px;
+    line-height:1.42;color:var(--ink);margin-bottom:22px;max-width:640px;}
+  .dark .lede{color:var(--paper);}
+  p.body{margin-bottom:14px;max-width:660px;}
+  .hl{color:var(--roxao);font-weight:700;}
+  .dark .hl{color:var(--lilac);font-weight:600;}
+
+  /* ===== CAPA ===== */
+  .capa{background:var(--midnight);}
+  .capa img.hero{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;}
+  .capa .scrim{position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(22,21,29,.12) 0%,rgba(22,21,29,0) 20%,rgba(22,21,29,0) 42%,rgba(22,21,29,.72) 56%,rgba(22,21,29,.97) 63%,#16151D 67%);}
+  .capa .bloco{position:absolute;left:64px;right:64px;bottom:92px;}
+  .capa .eyebrow{color:var(--lilac);margin-bottom:18px;}
+  .capa h1{font-family:'Domine',serif;font-weight:800;font-size:76px;line-height:1.02;
+    color:var(--paper);letter-spacing:-.015em;}
+  .capa .serifa{font-family:'Anthropic Serif Display',serif;font-size:62px;line-height:1.1;
+    color:var(--lilac);margin-top:6px;}
+  .capa .sub{margin-top:20px;font-size:16.5px;line-height:1.55;color:rgba(244,245,240,.9);max-width:520px;}
+  .capa .lockup{position:absolute;bottom:34px;left:0;right:0;text-align:center;}
+  .capa .lockup img{height:26px;opacity:.92;}
+
+  /* ===== doutrina (pg 2) ===== */
+  .regras{display:flex;flex-direction:column;gap:14px;margin-top:26px;}
+  .regra{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--roxao);
+    padding:18px 22px;}
+  .regra b{display:block;font-family:'Inter',sans-serif;font-weight:600;font-size:16px;
+    margin-bottom:4px;letter-spacing:-.01em;}
+  .regra span{font-size:13.5px;color:#4A4944;line-height:1.5;display:block;}
+
+  /* ===== instalação (pg 3) ===== */
+  .cols2{display:flex;gap:18px;margin-top:8px;}
+  .cols2 .col{flex:1;background:var(--card);border:1px solid var(--border);padding:20px 22px;}
+  .col h3{font-family:'Domine',serif;font-weight:700;font-size:17px;margin-bottom:12px;}
+  .passos{list-style:none;}
+  .passos li{display:flex;gap:10px;margin-bottom:10px;font-size:13.5px;line-height:1.5;}
+  .passos .n{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--roxao);
+    font-weight:700;padding-top:2px;}
+  .codebox{background:var(--midnight);color:var(--lilac);font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;line-height:1.7;padding:16px 18px;margin-top:10px;
+    white-space:pre;overflow:hidden;}
+  .check{margin-top:26px;}
+  .check h3{font-family:'Domine',serif;font-weight:700;font-size:19px;margin-bottom:12px;}
+  .check ul{list-style:none;}
+  .check li{display:flex;gap:10px;margin-bottom:8px;font-size:13.5px;}
+  .check .ok{color:var(--roxao);font-weight:700;}
+
+  /* ===== as 5 (pg 4) ===== */
+  .lista7{margin-top:10px;}
+  .srow{display:flex;gap:18px;align-items:flex-start;padding:15px 0;border-bottom:1px solid var(--border);}
+  .srow .num{font-family:'Domine',serif;font-weight:800;font-size:26px;color:var(--roxao);
+    width:40px;flex-shrink:0;line-height:1.1;}
+  .srow .nome{font-family:'Domine',serif;font-weight:700;font-size:17.5px;margin-bottom:2px;}
+  .srow .desc{font-size:13px;line-height:1.5;color:#4A4944;max-width:520px;}
+  .srow .pasta{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;
+    color:var(--dim);margin-left:auto;flex-shrink:0;padding-top:6px;}
+  .chip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;
+    letter-spacing:.14em;background:var(--lilac);color:var(--ink);padding:3px 8px;
+    margin-left:8px;vertical-align:2px;}
+  .gh{margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;
+    color:var(--ink);}
+  .gh b{color:var(--roxao);font-weight:700;}
+
+  /* ===== divider 30 (pg 5) ===== */
+  .div42 .num42{font-family:'Domine',serif;font-weight:800;font-size:250px;line-height:.95;
+    color:var(--lilac);letter-spacing:-.03em;margin:26px 0 8px;}
+  .div42 .stmt{font-family:'Anthropic Serif Display',serif;font-size:33px;line-height:1.3;
+    color:var(--paper);max-width:600px;margin-bottom:38px;}
+  .comousar{border-top:1px solid rgba(224,176,255,.25);padding-top:26px;max-width:620px;}
+  .comousar .item{display:flex;gap:14px;margin-bottom:14px;}
+  .comousar .k{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--lilac);
+    letter-spacing:.14em;padding-top:3px;flex-shrink:0;}
+  .comousar .v{font-size:14.5px;line-height:1.5;color:rgba(244,245,240,.92);}
+  .comousar .v b{color:var(--lilac);font-weight:600;}
+
+  /* ===== página de skill ===== */
+  .shead{display:flex;gap:20px;align-items:flex-start;margin-bottom:20px;}
+  .shead .big{font-family:'Domine',serif;font-weight:800;font-size:58px;line-height:.95;
+    color:var(--roxao);flex-shrink:0;letter-spacing:-.02em;}
+  .shead h2{margin-bottom:6px;font-size:29px;}
+  .shead .oque{font-size:13.5px;line-height:1.5;color:#4A4944;max-width:540px;}
+  .page:has(.prompts) .pad{display:flex;flex-direction:column;height:1056px;padding-bottom:76px;}
+  .page:has(.prompts) .shead,.page:has(.prompts) .eyebrow{flex-shrink:0;}
+  .prompts{display:flex;flex-direction:column;gap:11px;flex:1;}
+  .pcard{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--roxao);
+    padding:12px 18px 13px;flex:1;display:flex;flex-direction:column;justify-content:center;}
+  .pcard .lab{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;
+    color:var(--roxao);text-transform:uppercase;margin-bottom:5px;}
+  .pcard .txt{font-size:14px;line-height:1.5;color:var(--ink);}
+  .pcard .txt .ph{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#7A3FA8;
+    background:rgba(191,0,255,.07);padding:1px 4px;}
+  .casa{margin-top:18px;display:flex;gap:14px;align-items:flex-start;flex-shrink:0;}
+  .casa .k{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;
+    color:var(--dim);padding-top:6px;flex-shrink:0;}
+  .casa .v{font-family:'Anthropic Serif Display',serif;font-size:17.5px;line-height:1.4;color:var(--ink);}
+
+  /* ===== combos ===== */
+  .combos{display:flex;flex-direction:column;gap:14px;margin-top:6px;}
+  .combo{background:var(--card);border:1px solid var(--border);padding:18px 22px;}
+  .combo .lab{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;
+    color:var(--roxao);text-transform:uppercase;margin-bottom:6px;}
+  .combo .nome{font-family:'Domine',serif;font-weight:700;font-size:17px;margin-bottom:5px;}
+  .combo .txt{font-size:13.5px;line-height:1.5;color:#4A4944;margin-bottom:8px;}
+  .combo .ptx{font-size:13.5px;line-height:1.5;color:var(--ink);border-left:3px solid var(--lilac);
+    padding:6px 0 6px 14px;background:rgba(224,176,255,.08);}
+
+  /* ===== o teste (pg 12) ===== */
+  .placar{display:flex;gap:18px;margin:26px 0;}
+  .pcell{flex:1;background:var(--card);border:1px solid var(--border);padding:24px 22px;text-align:center;}
+  .pcell .n{font-family:'Domine',serif;font-weight:800;font-size:64px;line-height:1;color:var(--roxao);}
+  .pcell.sem .n{color:var(--dim);}
+  .pcell .l{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;
+    color:var(--dim);text-transform:uppercase;margin-top:8px;}
+  .metodo{list-style:none;margin-top:8px;max-width:660px;}
+  .metodo li{display:flex;gap:10px;margin-bottom:9px;font-size:13.5px;line-height:1.5;}
+  .metodo .m{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--roxao);
+    font-weight:700;padding-top:3px;flex-shrink:0;}
+
+  /* ===== contracapa ===== */
+  .fim{background:var(--midnight);}
+  .fim img.hero{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 12%;}
+  .fim .scrim{position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(22,21,29,.08) 0%,rgba(22,21,29,0) 20%,rgba(22,21,29,0) 40%,rgba(22,21,29,.72) 54%,rgba(22,21,29,.97) 61%,#16151D 65%);}
+  .fim .bloco{position:absolute;left:64px;right:64px;bottom:74px;}
+  /* HENKO sempre em CAIXA ALTA; sem Ç nem Q, que a fonte quebra. */
+  .fim .stmt{font-family:'HENKO',sans-serif;font-weight:400;font-size:47px;line-height:1.04;
+    letter-spacing:.005em;color:var(--roxao);margin-bottom:26px;white-space:nowrap;
+    text-transform:uppercase;}
+  .fim .stmt .rx{display:block;}
+  .fim .cta{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.1em;
+    color:var(--lilac);margin-bottom:26px;line-height:2;}
+  .fim .fine{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.1em;
+    line-height:1.9;color:rgba(244,245,240,.55);max-width:560px;}
+  .fim .cta a{color:inherit;text-decoration:none;}
+  .fim .cta b{color:var(--paper);font-weight:700;}
+
+  /* ===== onde baixar ===== */
+  .baixar .ghcard{margin-top:30px;
+    background:rgba(244,245,240,.045);border:1px solid rgba(224,176,255,.26);padding:32px 34px;}
+  .baixar .ghtopo{display:flex;gap:30px;align-items:center;justify-content:space-between;}
+  .baixar .perfil{display:flex;gap:16px;align-items:center;}
+  .baixar .avatar{width:78px;height:78px;border-radius:19px;flex-shrink:0;
+    border:1px solid rgba(224,176,255,.32);}
+  .baixar .nome{font-family:'Domine',serif;font-weight:700;font-size:23px;color:var(--paper);
+    line-height:1.2;}
+  .baixar .user{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;
+    color:var(--lilac);margin-top:5px;}
+  .baixar .link{display:block;font-family:'IBM Plex Mono',monospace;font-size:23px;
+    color:rgba(244,245,240,.6);text-decoration:none;letter-spacing:-.015em;line-height:1.3;
+    white-space:nowrap;margin-top:26px;padding-top:24px;
+    border-top:1px solid rgba(224,176,255,.2);}
+  .baixar .link b{color:var(--paper);font-weight:700;}
+  .baixar .link .sl{color:var(--lilac);}
+  .baixar .qr{flex-shrink:0;text-align:center;}
+  .baixar .qr img{width:164px;height:164px;display:block;border-radius:6px;}
+  .baixar .qr span{display:block;margin-top:9px;font-family:'IBM Plex Mono',monospace;
+    font-size:8.5px;letter-spacing:.18em;color:rgba(224,176,255,.78);}
+  .baixar .pastas{margin-top:26px;}
+  .baixar .pastas .lb{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;
+    letter-spacing:.16em;color:rgba(244,245,240,.42);margin-bottom:11px;}
+  .baixar .pastas .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .baixar .pastas span.p{font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+    color:var(--lilac);border:1px solid rgba(224,176,255,.3);border-radius:999px;
+    padding:5px 13px;}
+  .baixar .duas{display:flex;gap:18px;margin-top:30px;}
+  .baixar .via{flex:1;border-top:1px solid rgba(224,176,255,.24);padding-top:14px;}
+  .baixar .via .k{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;
+    color:var(--lilac);margin-bottom:7px;}
+  .baixar .via .v{font-size:13.5px;line-height:1.5;color:rgba(244,245,240,.9);}
+  .baixar .via .v b{color:var(--paper);font-weight:600;}
+  .baixar .assinatura{margin-top:20px;border-top:1px solid rgba(224,176,255,.24);padding-top:22px;}
+  .baixar .assinatura .frase{font-family:'Anthropic Serif Display',serif;font-size:22px;
+    line-height:1.42;color:var(--paper);max-width:620px;}
+  .baixar .rodape{margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;
+    letter-spacing:.1em;line-height:2;color:rgba(244,245,240,.5);}
+  .baixar .rodape b{color:var(--lilac);font-weight:400;}
+</style>
+</head>
+<body>
+
+<!-- ============ 01 · CAPA ============ -->
+<div class="page capa">
+  <img class="hero" src="assets/banner.png" alt="" style="object-position:68% 25%">
+  <div class="scrim"></div>
+  <div class="fio"></div>
+  <div class="bloco">
+    <div class="eyebrow">5 skills · 30 prompts · para Claude</div>
+    <h1>AEGIS SKILLS</h1>
+    <div class="serifa">antes e depois do clique</div>
+    <div class="sub">O trabalho que decide o trade acontece fora do gráfico. Cinco skills que
+      fazem o Claude cobrar plano, agenda, tamanho e backtest de você. Nenhuma dá sinal,
+      de propósito.</div>
+  </div>
+  <div class="lockup"><img src="assets/aegis_ai_lockup_vapor_lilac.png" alt="AEGIS.AI"></div>
+</div>
+
+<!-- ============ 02 · O PACOTE ============ -->
+<div class="page">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">01 · o pacote</div>
+    <h2>A IA que te dá sinal inventa preço.<br>Essas cinco, não.</h2>
+    <div class="lede">Skill é método que fica instalado. Você ensina o Claude uma vez e ele
+      passa a trabalhar desse jeito sempre, a pasta certa abre sozinha quando o pedido bate
+      com o tema dela.</div>
+    <p class="body">Esse guia anda junto com as <b>5 skills pra trader</b> do pacote AEGIS e
+      traz <b>30 prompts prontos</b>: plano do dia, radar de notícias da sessão, swing,
+      cripto com calculadora de liquidação e backtest com Monte Carlo. Elas cobrem o
+      <span class="hl">antes do clique</span> (plano, agenda, tese, tamanho) e o
+      <span class="hl">depois</span> (a validação do setup).</p>
+    <p class="body">O que separa esse pacote de prompt genérico de internet é a
+      <b>honestidade</b> travada dentro de cada skill:</p>
+    <div class="regras">
+      <div class="regra">
+        <b>Nenhuma dá sinal.</b>
+        <span>Nenhuma manda comprar ou vender. Todas devolvem plano, número e o que invalida
+        três cenários sempre, R calculado, stop separado da invalidação. A decisão é sua,
+        sempre foi.</span>
+      </div>
+      <div class="regra">
+        <b>Nenhuma inventa preço.</b>
+        <span>O Claude não vê o seu gráfico. Quando falta um número, a skill deixa o campo
+        nomeado pra você preencher ("máxima de ontem: ___") em vez de fabricar um pra
+        parecer competente.</span>
+      </div>
+      <div class="regra">
+        <b>Nenhuma prevê dado.</b>
+        <span>Agenda, consenso e funding são buscados na web na hora, de fonte primária.
+        Sensibilidade sim ("se vier acima, tende a X"), palpite não. Quem te vende previsão
+        tá te vendendo o guru de sempre com casca nova.</span>
+      </div>
+    </div>
+    <div class="casa" style="margin-top:34px"><span class="k">A RÉGUA</span>
+      <span class="v">Disciplina acima de sinal. O que esse pacote instala não é opinião
+      nova: é um processo que cobra o seu.</span></div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>02 / 14</span></div>
+</div>
+
+<!-- ============ 03 · INSTALAÇÃO ============ -->
+<div class="page">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">02 · instalação</div>
+    <h2>Instale uma vez, use pra sempre.</h2>
+    <div class="cols2">
+      <div class="col">
+        <h3>Claude (claude.ai e apps)</h3>
+        <ul class="passos">
+          <li><span class="n">1.</span><span>Baixe os <b>.zip</b> das skills (vieram junto
+            com esse guia; também ficam na página de Releases do repositório).</span></li>
+          <li><span class="n">2.</span><span>Em claude.ai: <b>Settings → Capabilities →
+            Skills → Upload skill</b> e mande o ZIP.</span></li>
+          <li><span class="n">3.</span><span>Repita por skill. Funciona nos planos pagos.</span></li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Claude Code (terminal)</h3>
+        <ul class="passos">
+          <li><span class="n">1.</span><span>Clone o repositório e copie as pastas pra sua biblioteca de skills:</span></li>
+        </ul>
+        <div class="codebox">git clone github.com/aaegisengine/aegis-skills
+cp -r aegis-skills/{day-trade-plan,
+  session-news-radar,swing-trade-plan,
+  crypto-trade-plan,setup-backtest} \
+  ~/.claude/skills/</div>
+      </div>
+    </div>
+    <p class="body" style="margin-top:16px">Depois é só <b>conversar</b>: "plano pra amanhã
+      no WIN" acorda a skill certa sozinha. Os prompts desse guia servem pra apontar
+      exatamente o que você quer da mesa.</p>
+    <div class="check">
+      <h3>O pedido que a skill trabalha bem</h3>
+      <ul>
+        <li><span class="ok">✓</span><span><b>Diga o ativo e o seu risco por trade.</b> São
+          as duas únicas coisas que ela sempre precisa; o resto ela assume e declara.</span></li>
+        <li><span class="ok">✓</span><span><b>Cole os seus níveis, se tiver.</b> Sem eles a
+          skill monta o esqueleto com campos nomeados pra você preencher.</span></li>
+        <li><span class="ok">✓</span><span><b>Deixe ela buscar.</b> Agenda, consenso, funding
+          e OI vêm da web na hora, nunca de memória.</span></li>
+        <li><span class="ok">✓</span><span><b>Mande a planilha no backtest.</b> Um CSV com
+          data e resultado em R basta; o template vem na pasta.</span></li>
+        <li><span class="ok">✓</span><span><b>Volte no meio do pregão.</b> "Mudou algo?" é um
+          pedido válido, a skill defende o plano em vez de reescrever.</span></li>
+      </ul>
+    </div>
+    <div class="casa" style="margin-top:30px"><span class="k">DICA</span>
+      <span class="v">Dá pra chamar pelo nome: "usa a day-trade-plan pra montar o plano de
+      amanhã". Mas na prática basta pedir, que a skill certa acorda.</span></div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>03 / 14</span></div>
+</div>
+
+<!-- ============ 04 · AS 5 SKILLS ============ -->
+<div class="page">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">03 · o arsenal</div>
+    <h2>As cinco skills.</h2>
+    <div class="lista7">
+      <div class="srow">
+        <div class="num">01</div>
+        <div><div class="nome">Day Trade Plan<span class="chip">O PLANO DO DIA</span></div>
+        <div class="desc">Contexto em 3 linhas, agenda em BRT, níveis com origem, três
+          cenários sempre (alta, baixa e o lateral que você esquece) com R e contratos
+          calculados, regras do dia e checklist pré-entrada.</div></div>
+        <div class="pasta">day-trade-plan/</div>
+      </div>
+      <div class="srow">
+        <div class="num">02</div>
+        <div><div class="nome">Session News Radar</div>
+        <div class="desc">A agenda que pode virar o preço contra você: impacto julgado pelo
+          SEU ativo, sensibilidade por lado, janelas em que não vale operar. Busca real na
+          web, nunca memória.</div></div>
+        <div class="pasta">session-news-radar/</div>
+      </div>
+      <div class="srow">
+        <div class="num">03</div>
+        <div><div class="nome">Swing Trade Plan</div>
+        <div class="desc">Tese em uma frase, catalisadores com data, stop estrutural e a
+          invalidação separada do stop, o que impede o trade de virar "investimento" quando
+          vai contra.</div></div>
+        <div class="pasta">swing-trade-plan/</div>
+      </div>
+      <div class="srow">
+        <div class="num">04</div>
+        <div><div class="nome">Crypto Trade Plan</div>
+        <div class="desc">A camada que só existe em cripto: funding, OI, liquidações, fim de
+          semana ilíquido, e a calculadora que mostra o preço de liquidação do lado do seu
+          stop antes de você clicar.</div></div>
+        <div class="pasta">crypto-trade-plan/</div>
+      </div>
+      <div class="srow" style="border-bottom:none">
+        <div class="num">05</div>
+        <div><div class="nome">Setup Backtest</div>
+        <div class="desc">Do "eu vejo no gráfico" ao número reproduzível: regras testáveis,
+          critério de aprovação escrito ANTES do teste, métricas + Monte Carlo por script, e
+          o veredito go/no-go.</div></div>
+        <div class="pasta">setup-backtest/</div>
+      </div>
+    </div>
+    <p class="body" style="margin-top:22px">As cinco conversam: o radar alimenta os planos
+      com a agenda, o plano manda os trades pro journal, e o backtest transforma o seu setup
+      em número. É a mesa inteira, <span class="hl">sem ninguém dando call</span>.</p>
+    <div class="gh">REPOSITÓRIO · <a href="https://github.com/aaegisengine/aegis-skills"
+      style="color:inherit;text-decoration:none"><b>github.com/aaegisengine/aegis-skills</b></a></div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>04 / 14</span></div>
+</div>
+
+<!-- ============ 05 · DIVIDER 30 ============ -->
+<div class="page dark div42">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">04 · os prompts</div>
+    <div class="num42">30</div>
+    <div class="stmt">Prompt bom não pede sinal.<br>Pede plano.</div>
+    <div class="comousar">
+      <div class="item"><span class="k">TROCA</span>
+        <span class="v"><b>[ATIVO]</b>, <b>[VALOR]</b> e afins são espaços de troca:
+        preencha com o seu caso antes de mandar.</span></div>
+      <div class="item"><span class="k">CONTA</span>
+        <span class="v">Diga sempre o <b>seu risco por trade</b>. É o número que transforma
+        análise em plano, sem ele, tamanho não existe.</span></div>
+      <div class="item"><span class="k">DISPARA</span>
+        <span class="v">Com a skill instalada ela acorda sozinha. O prompt existe pra
+        <b>apontar a direção exata</b> do que você quer da mesa.</span></div>
+      <div class="item"><span class="k">COBRA</span>
+        <span class="v">Se a resposta cravar preço que ninguém deu ou soar a call,
+        <b>cobre o método</b>: as skills foram construídas pra assumir limite, não pra
+        esconder.</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>05 / 14</span></div>
+</div>
+
+<!-- ============ 06 · DAY TRADE PLAN ============ -->
+<div class="page">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">skill 01 / 05 · pasta day-trade-plan/</div>
+    <div class="shead">
+      <div class="big">01</div>
+      <div>
+        <h2>Day Trade Plan</h2>
+        <div class="oque">O raciocínio das 08:30, escrito pra valer às 10:47, quando o WIN
+          cair 800 pontos, você olha o plano e responde em 5 segundos: tá nele ou não tá?</div>
+      </div>
+    </div>
+    <div class="prompts">
+      <div class="pcard"><div class="lab">prompt 01 · o plano do dia</div>
+        <div class="txt">Monta meu plano de amanhã pro <span class="ph">[ATIVO]</span>. Risco
+        de <span class="ph">[VALOR]</span> por trade. Meus níveis:
+        <span class="ph">[NÍVEIS]</span>.</div></div>
+      <div class="pcard"><div class="lab">prompt 02 · sem níveis marcados</div>
+        <div class="txt">Ainda não marquei nada. Busca o fechamento e a agenda de amanhã e
+        monta o esqueleto do plano do <span class="ph">[ATIVO]</span> com os campos dos meus
+        níveis em branco.</div></div>
+      <div class="pcard"><div class="lab">prompt 03 · o cenário que ninguém escreve</div>
+        <div class="txt">O que eu faço se o dia abrir e não fizer nada? Escreve o cenário
+        lateral do meu plano, é o dia em que eu mais perco dinheiro operando o que não
+        existe.</div></div>
+      <div class="pcard"><div class="lab">prompt 04 · revisão no meio do pregão</div>
+        <div class="txt">Mudou algo? O mercado fez <span class="ph">[MOVIMENTO]</span>. Qual
+        cenário tá ativo agora e quanto risco eu ainda tenho no dia?</div></div>
+      <div class="pcard"><div class="lab">prompt 05 · defesa do plano</div>
+        <div class="txt">Tô vendo uma entrada em <span class="ph">[REGIÃO]</span> que não tá
+        no plano. Me diz na cara: isso é um dos meus cenários ou é vontade de operar?</div></div>
+      <div class="pcard"><div class="lab">prompt 06 · fechamento</div>
+        <div class="txt">Fechou a sessão. Qual cenário o mercado escolheu, quais trades
+        estavam no plano, e a UMA coisa que eu mudo amanhã?</div></div>
+    </div>
+    <div class="casa"><span class="k">REGRA DA CASA</span>
+      <span class="v">Meta de ganho não existe no plano: ela faz parar cedo no dia bom e
+      forçar no dia ruim.</span></div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>06 / 14</span></div>
+</div>
+
+<!-- ============ 07 · SESSION NEWS RADAR ============ -->
+<div class="page">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">skill 02 / 05 · pasta session-news-radar/</div>
+    <div class="shead">
+      <div class="big">02</div>
+      <div>
+        <h2>Session News Radar</h2>
+        <div class="oque">Não é "as notícias de hoje". É o que pode virar o preço contra
+          você, no SEU ativo, na SUA janela, com horário em BRT e a fonte do lado.</div>
+      </div>
+    </div>
+    <div class="prompts">
+      <div class="pcard"><div class="lab">prompt 07 · radar do dia</div>
+        <div class="txt">O que tem hoje pro <span class="ph">[ATIVO]</span>? Horários em BRT,
+        consenso contra anterior, e as janelas em que não vale operar.</div></div>
+      <div class="pcard"><div class="lab">prompt 08 · radar de amanhã</div>
+        <div class="txt">Monta o radar de amanhã pro dólar: o que pode virar o preço contra
+        mim e a que horas?</div></div>
+      <div class="pcard"><div class="lab">prompt 09 · por que tá caindo</div>
+        <div class="txt">Por que o <span class="ph">[ATIVO]</span> tá caindo agora? Busca as
+        últimas horas e me diz se é notícia ou fluxo, e se não achar causa, fala que não
+        achou.</div></div>
+      <div class="pcard"><div class="lab">prompt 10 · a semana</div>
+        <div class="txt">O que tem essa semana pro <span class="ph">[ATIVO]</span>, agrupado
+        por dia? Corta tudo que é impacto baixo.</div></div>
+      <div class="pcard"><div class="lab">prompt 11 · o que já tá no preço</div>
+        <div class="txt">Esse <span class="ph">[EVENTO]</span> de amanhã ainda move o mercado
+        ou já tá precificado? Três linhas.</div></div>
+      <div class="pcard"><div class="lab">prompt 12 · o risco sem horário</div>
+        <div class="txt">Além da agenda, qual o risco sem hora marcada pro
+        <span class="ph">[ATIVO]</span> essa semana, aquilo que o calendário não mostra?</div></div>
+    </div>
+    <div class="casa"><span class="k">REGRA DA CASA</span>
+      <span class="v">Sensibilidade sim, palpite não. E mercado cai sem motivo o tempo todo
+      a skill fala isso em vez de inventar narrativa.</span></div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>07 / 14</span></div>
+</div>
+
+<!-- ============ 08 · SWING TRADE PLAN ============ -->
+<div class="page">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">skill 03 / 05 · pasta swing-trade-plan/</div>
+    <div class="shead">
+      <div class="big">03</div>
+      <div>
+        <h2>Swing Trade Plan</h2>
+        <div class="oque">A posição nasce trade e vira "investimento" quando vai contra. O
+          plano deixa escrito, antes da entrada, o que faz ela estar errada, de um jeito que
+          você não reinterpreta três dias depois.</div>
+      </div>
+    </div>
+    <div class="prompts">
+      <div class="pcard"><div class="lab">prompt 13 · a tese em uma frase</div>
+        <div class="txt">Tô de olho em <span class="ph">[ATIVO]</span> pras próximas semanas.
+        Me ajuda a escrever a tese em UMA frase com prazo, e se a frase não fechar, me fala
+        que eu não tenho tese.</div></div>
+      <div class="pcard"><div class="lab">prompt 14 · o plano completo</div>
+        <div class="txt">Monta o swing de <span class="ph">[ATIVO]</span>: entrada por
+        região, stop estrutural, alvos com R calculado e tamanho pro risco de
+        <span class="ph">[VALOR]</span>.</div></div>
+      <div class="pcard"><div class="lab">prompt 15 · catalisadores</div>
+        <div class="txt">Busca o que tem no horizonte de <span class="ph">[ATIVO]</span> nas
+        próximas <span class="ph">[N]</span> semanas (resultado, juros, vencimento) e me
+        diz o que a posição atravessa e do que ela sai antes.</div></div>
+      <div class="pcard"><div class="lab">prompt 16 · invalidação testável</div>
+        <div class="txt">Escreve a invalidação da minha tese numa frase testável, do tipo "se
+        X, saio na próxima abertura". Sem "reavaliar", essa é a palavra que eu uso pra não
+        sair.</div></div>
+      <div class="pcard"><div class="lab">prompt 17 · posição carregada</div>
+        <div class="txt">Tô comprado em <span class="ph">[ATIVO]</span> desde
+        <span class="ph">[PREÇO]</span>. Revisa: onde eu tô em R, a tese ainda vale, e qual
+        a ação concreta?</div></div>
+      <div class="pcard"><div class="lab">prompt 18 · anti-narrativa</div>
+        <div class="txt">Tô segurando <span class="ph">[ATIVO]</span> no prejuízo. Não me
+        ajuda a justificar segurar: me mostra os fatos e me diz manter, reduzir ou sair.</div></div>
+    </div>
+    <div class="casa"><span class="k">REGRA DA CASA</span>
+      <span class="v">Stop é onde o preço diz que errou. Invalidação é onde a tese diz, e
+      ela costuma chegar primeiro.</span></div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>08 / 14</span></div>
+</div>
+
+<!-- ============ 09 · CRYPTO TRADE PLAN ============ -->
+<div class="page">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">skill 04 / 05 · pasta crypto-trade-plan/</div>
+    <div class="shead">
+      <div class="big">04</div>
+      <div>
+        <h2>Crypto Trade Plan</h2>
+        <div class="oque">Cripto pune quem trata como ação e quem trata como cassino. O plano
+          traz a camada que só existe aqui (funding, OI, liquidação, domingo) e define o
+          tamanho pelo risco, não pela alavancagem que a exchange deixa.</div>
+      </div>
+    </div>
+    <div class="prompts">
+      <div class="pcard"><div class="lab">prompt 19 · o plano</div>
+        <div class="txt">Monta o plano de BTC pro <span class="ph">[HORIZONTE]</span>, risco
+        de <span class="ph">[VALOR]</span>. Busca funding, OI e liquidações antes de
+        escrever.</div></div>
+      <div class="pcard"><div class="lab">prompt 20 · tamanho e liquidação</div>
+        <div class="txt">Entrada <span class="ph">[PREÇO]</span>, stop
+        <span class="ph">[PREÇO]</span>, risco <span class="ph">[VALOR]</span>: roda a
+        calculadora e me dá tamanho, alavancagem mínima e o preço de liquidação com
+        folga.</div></div>
+      <div class="pcard"><div class="lab">prompt 21 · antes de alavancar</div>
+        <div class="txt">Quero ir de <span class="ph">[ALAVANCAGEM]</span>. Me mostra o preço
+        de liquidação do lado do meu stop antes de eu clicar.</div></div>
+      <div class="pcard"><div class="lab">prompt 22 · o fim de semana</div>
+        <div class="txt">Minha posição atravessa o fim de semana. Que tamanho sobrevive ao
+        domingo ilíquido, aquele movimento de 5% sem notícia nenhuma?</div></div>
+      <div class="pcard"><div class="lab">prompt 23 · posição aberta</div>
+        <div class="txt">Tô long <span class="ph">[ALAVANCAGEM]</span> em
+        <span class="ph">[ATIVO]</span> desde <span class="ph">[PREÇO]</span>, sem stop na
+        corretora. Começa pela distância até a minha liquidação.</div></div>
+      <div class="pcard"><div class="lab">prompt 24 · altcoin</div>
+        <div class="txt">Plano pra <span class="ph">[ALTCOIN]</span>, e inclui o que eu faço
+        se o BTC perder <span class="ph">[NÍVEL]</span>, porque a alt cai o dobro.</div></div>
+    </div>
+    <div class="casa"><span class="k">REGRA DA CASA</span>
+      <span class="v">O número convence mais que o sermão: a skill não discute a alavancagem,
+      ela mostra a liquidação do lado do stop.</span></div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>09 / 14</span></div>
+</div>
+
+<!-- ============ 10 · SETUP BACKTEST ============ -->
+<div class="page">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">skill 05 / 05 · pasta setup-backtest/</div>
+    <div class="shead">
+      <div class="big">05</div>
+      <div>
+        <h2>Setup Backtest</h2>
+        <div class="oque">"Compro pullback em tendência" não é regra, é memória dos que
+          deram certo. A skill tira o setup da sua cabeça, escreve regras que duas pessoas
+          aplicariam igual, e só então mede.</div>
+      </div>
+    </div>
+    <div class="prompts">
+      <div class="pcard"><div class="lab">prompt 25 · formalizar</div>
+        <div class="txt">Meu setup: <span class="ph">[DESCRIÇÃO SOLTA]</span>. Transforma em
+        regras testáveis, e me devolve a pergunta objetiva em cada pedaço vago.</div></div>
+      <div class="pcard"><div class="lab">prompt 26 · o critério vem antes</div>
+        <div class="txt">Antes de eu testar: escreve comigo o critério de aprovação. O que
+        "funcionar" significa em número, expectância, drawdown, quantos trades?</div></div>
+      <div class="pcard"><div class="lab">prompt 27 · a planilha</div>
+        <div class="txt">Minha planilha de trades tá em anexo. Roda o script de métricas com
+        o Monte Carlo e me diz o que os números dizem, inclusive o que eu não quero
+        ouvir.</div></div>
+      <div class="pcard"><div class="lab">prompt 28 · a amostra</div>
+        <div class="txt">Tenho <span class="ph">[N]</span> trades registrados. Isso prova
+        alguma coisa? Quantos faltam pra uma conclusão de verdade?</div></div>
+      <div class="pcard"><div class="lab">prompt 29 · caça aos vieses</div>
+        <div class="txt">Ataca meu backtest: look-ahead, overfitting, janela escolhida a
+        dedo, execução idealizada. As sete perguntas, uma a uma.</div></div>
+      <div class="pcard"><div class="lab">prompt 30 · o veredito</div>
+        <div class="txt">Dá o veredito: aprovado, reprovado ou inconclusivo, sem "quase
+        aprovado". E se passar, o plano de forward test com o critério de continuidade já
+        escrito.</div></div>
+    </div>
+    <div class="casa"><span class="k">REGRA DA CASA</span>
+      <span class="v">Critério escrito depois do resultado sempre aprova. Por isso ele se
+      escreve antes.</span></div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>10 / 14</span></div>
+</div>
+
+<!-- ============ 11 · COMBOS ============ -->
+<div class="page">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">05 · combos</div>
+    <h2>A rotina que uma alimenta a outra.</h2>
+    <div class="lede">Skill sozinha resolve um pedido. Em sequência, elas viram a rotina da
+      mesa, e a saída de uma é a entrada da outra.</div>
+    <div class="combos">
+      <div class="combo">
+        <div class="lab">combo 01 · a manhã inteira</div>
+        <div class="nome">Radar → Plano do dia</div>
+        <div class="txt">Antes da abertura: o radar levanta a agenda e as janelas de risco; o
+          plano nasce com elas já dentro.</div>
+        <div class="ptx">"Monta o radar de hoje pro WIN. Depois usa ele pra montar meu plano
+          do dia, risco de [VALOR] por trade, meus níveis: [NÍVEIS]."</div>
+      </div>
+      <div class="combo">
+        <div class="lab">combo 02 · o swing responsável</div>
+        <div class="nome">Catalisadores → Tese → Invalidação</div>
+        <div class="txt">Ordem que impede o swing de nascer torto: primeiro o que tem no
+          horizonte, depois a tese em uma frase, depois o que mata a tese.</div>
+        <div class="ptx">"Busca os catalisadores de [ATIVO] nas próximas 3 semanas. Se
+          sobrar espaço pra um swing, escreve a tese em uma frase, e a invalidação
+          testável dela."</div>
+      </div>
+      <div class="combo">
+        <div class="lab">combo 03 · da ideia ao número</div>
+        <div class="nome">Formalizar → Medir → Veredito</div>
+        <div class="txt">O ciclo completo do setup: regras testáveis, critério antes do
+          teste, planilha no script, go/no-go.</div>
+        <div class="ptx">"Formaliza esse setup em regras. Fecha comigo o critério de
+          aprovação. Aí eu te mando a planilha e você roda as métricas e dá o veredito."</div>
+      </div>
+    </div>
+    <div class="casa" style="margin-top:26px"><span class="k">O ELO</span>
+      <span class="v">O plano termina em três campos de journal. O journal vira a planilha.
+      A planilha volta pro backtest. A mesa se fecha.</span></div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>11 / 14</span></div>
+</div>
+
+<!-- ============ 12 · O TESTE ============ -->
+<div class="page">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">06 · o teste</div>
+    <h2>93% contra 61%.</h2>
+    <div class="lede">Cada skill rodou num cenário real, agenda de verdade, preço buscado
+      na web, uma planilha de 64 trades, com e sem a skill instalada.</div>
+    <div class="placar">
+      <div class="pcell"><div class="n">93%</div><div class="l">dos critérios · com skill</div></div>
+      <div class="pcell sem"><div class="n">61%</div><div class="l">dos critérios · sem skill</div></div>
+    </div>
+    <ul class="metodo">
+      <li><span class="m">COMO</span><span>Cinco cenários reais, uma rodada cada, julgados
+        contra <b>critérios de qualidade escritos antes</b> do teste, se o plano tem três
+        cenários, se o R foi calculado e não estimado, se a invalidação está separada do
+        stop, se a agenda veio de busca real.</span></li>
+      <li><span class="m">O QUE MEDE</span><span>Qualidade da <b>resposta</b>. Não mede, e
+        não poderia medir, resultado de trading. Skill não te deixa lucrativo; ela deixa o
+        seu processo cobrável.</span></li>
+      <li><span class="m">O ACHADO</span><span>O que a skill mais adiciona não é "saber
+        mais". É <b>disciplina de formato</b>: o Claude sem skill sabe fazer a conta da
+        liquidação, ele só não se cobra de fazer. Com a skill, a conta e a liquidação
+        saíram certas nos dois casos; o que mudou foi tudo em volta.</span></li>
+      <li><span class="m">O LIMITE</span><span>Uma rodada por cenário é amostra pequena, e a
+        gente diz isso com todas as letras, é exatamente o que a skill de backtest faria
+        com um número desses.</span></li>
+    </ul>
+    <div class="casa" style="margin-top:24px"><span class="k">EM UMA FRASE</span>
+      <span class="v">Não falta inteligência. Falta alguém cobrando.</span></div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>12 / 14</span></div>
+</div>
+
+<!-- ============ 13 · ONDE BAIXAR ============ -->
+<div class="page dark baixar">
+  <div class="fio"></div>
+  <div class="pad">
+    <div class="eyebrow">07 · onde baixar</div>
+    <h2>As cinco moram aqui.</h2>
+    <p class="lede">O repositório é a versão viva do pacote, todo ajuste aparece lá
+      primeiro, junto com as 7 skills de leitura de gráfico.</p>
+
+    <div class="ghcard">
+      <div class="ghtopo">
+        <div class="perfil">
+          <img class="avatar" src="assets/gh-avatar.png" alt="">
+          <div>
+            <div class="nome">Aegis AI</div>
+            <div class="user">@aaegisengine</div>
+          </div>
+        </div>
+        <div class="qr">
+          <img src="assets/qr-github.png" alt="">
+          <span>APONTE A CÂMERA</span>
+        </div>
+      </div>
+      <a class="link" href="https://github.com/aaegisengine/aegis-skills">github.com<span
+        class="sl">/</span>aaegisengine<span class="sl">/</span><b>aegis-skills</b></a>
+    </div>
+
+    <div class="pastas">
+      <span class="lb">AS CINCO PASTAS</span>
+      <div class="chips">
+        <span class="p">day-trade-plan/</span><span class="p">session-news-radar/</span>
+        <span class="p">swing-trade-plan/</span><span class="p">crypto-trade-plan/</span>
+        <span class="p">setup-backtest/</span>
+      </div>
+    </div>
+
+    <div class="duas">
+      <div class="via">
+        <div class="k">CLAUDE · APP E SITE</div>
+        <div class="v">Baixe os <b>.zip</b> na aba <b>Releases</b> e mande um por vez em
+          Settings → Capabilities → Skills.</div>
+      </div>
+      <div class="via">
+        <div class="k">CLAUDE CODE · TERMINAL</div>
+        <div class="v">Clone o repositório e copie as cinco pastas pra
+          <b>~/.claude/skills/</b>. Funciona sem reiniciar.</div>
+      </div>
+    </div>
+
+    <div class="assinatura">
+      <div class="frase">Achou um erro, discorda de uma regra ou quer uma skill que não
+        existe ainda? Abre uma <b>issue</b> lá. Ninguém melhora sozinho, e skill de trading
+        não é diferente.</div>
+      <div class="rodape">
+        INSTAGRAM · <b>@aegisengine</b><br>
+        LICENÇA CC BY-NC 4.0 · USO PESSOAL LIVRE · REVENDA PROIBIDA
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>AEGIS SKILLS · 5 SKILLS PRA TRADER · 30 PROMPTS</span><span>13 / 14</span></div>
+</div>
+
+<!-- ============ 14 · CONTRACAPA ============ -->
+<div class="page fim">
+  <img class="hero" src="assets/banner.png" alt="" style="object-position:68% 18%">
+  <div class="scrim"></div>
+  <div class="fio"></div>
+  <div class="bloco">
+    <div class="stmt">Sinal é a parte fácil.<span class="rx">Agora você tem o resto.</span></div>
+    <div class="cta">REPOSITÓRIO · <a href="https://github.com/aaegisengine/aegis-skills"><b>github.com/aaegisengine/aegis-skills</b></a><br>
+      INSTAGRAM · <a href="https://www.instagram.com/aegisengine/"><b>@aegisengine</b></a></div>
+    <div class="fine">PLANO É HIPÓTESE, NÃO PREVISÃO. NENHUMA SKILL DÁ SINAL DE COMPRA OU
+      VENDA, PROMETE RESULTADO OU PREVÊ DADO. O TESTE 93%×61% MEDE QUALIDADE DE RESPOSTA
+      CONTRA CRITÉRIOS ESCRITOS ANTES, NUNCA RESULTADO DE TRADING.
+      NÃO É RECOMENDAÇÃO DE INVESTIMENTO.<br><br>
+      LICENÇA CC BY-NC 4.0 · USO PESSOAL LIVRE · REVENDA PROIBIDA · © AEGIS.AI 2026</div>
+  </div>
+</div>
+
+</body>
+</html>
