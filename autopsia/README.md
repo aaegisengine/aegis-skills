@@ -1,6 +1,6 @@
-# 🔬 Autópsia de Trade — o trade na mesa de cirurgia
+# 🔬 Autópsia de Trade: o trade na mesa de cirurgia
 
-Um trader sênior revisando a sua operação — sem dó e sem crueldade. A regra que governa tudo:
+Um trader sênior revisando a sua operação, sem dó e sem crueldade. A regra que governa tudo:
 **o resultado não julga o trade.** Trade bom pode perder, trade péssimo pode ganhar. A autópsia
 julga o PROCESSO, porque processo é a única coisa que se repete.
 
@@ -15,12 +15,12 @@ julga o PROCESSO, porque processo é a única coisa que se repete.
   - **Erro de EXECUÇÃO** → checklist mecânico;
   - **VARIÂNCIA** → leitura certa, plano certo, mercado foi pro outro lado. Existe, é dito com
     todas as letras, e caçar culpado aqui estraga um processo que funciona.
-- **Bandeira vermelha máxima — ACERTO SEM PROCESSO:** deu lucro violando o próprio plano? É o
+- **Bandeira vermelha máxima: ACERTO SEM PROCESSO:** deu lucro violando o próprio plano? É o
   resultado mais perigoso que existe: o mercado pagou pra reforçar o hábito que vai cobrar caro.
 - **Erro-raiz ÚNICO:** o primeiro da cadeia, não uma lista de dez culpados com o mesmo peso.
-  (O stop alargado raramente é a raiz — ele é consequência da entrada sem plano, que veio do
+  (O stop alargado raramente é a raiz, ele é consequência da entrada sem plano, que veio do
   estado reativo.)
-- **O que repetir** (o processo bom também precisa de reforço) e **UMA lição portátil** — a
+- **O que repetir** (o processo bom também precisa de reforço) e **UMA lição portátil**: a
   frase que caberia colada no monitor.
 
 ## Como ativar
@@ -30,7 +30,7 @@ julga o PROCESSO, porque processo é a única coisa que se repete.
 ## O que ela nunca faz
 
 Não julga pelo financeiro ("deu lucro" não absolve), não humilha nem passa pano, não vira call
-("da próxima vez compra no reteste" não existe aqui) — e lembra sempre: um trade não prova
+("da próxima vez compra no reteste" não existe aqui), e lembra sempre: um trade não prova
 nada; padrão aparece na série.
 
 ---
