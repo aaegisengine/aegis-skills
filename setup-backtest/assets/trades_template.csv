@@ -1,6 +1,6 @@
 data,ativo,setup,lado,entrada,stop,saida,r,obs
 2026-08-03,WIN,rompimento-abertura,compra,136200,136050,136500,2.0,gatilho limpo
 2026-08-03,WIN,rompimento-abertura,venda,136400,136550,136550,-1.0,rompimento falso
-2026-08-04,WIN,rompimento-abertura,compra,135800,135650,135900,0.67,saiu parcial no alvo 1
+2026-08-04,WIN,rompimento-abertura,compra,135800,135650,135900,0.67,saida por tempo (mao inteira)
 2026-08-05,WIN,rompimento-abertura,venda,136900,137050,136600,2.0,
 2026-08-06,WIN,rompimento-abertura,compra,136100,135950,135950,-1.0,dado das 09:30 contra

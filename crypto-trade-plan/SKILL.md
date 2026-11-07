@@ -1,129 +1,269 @@
 ---
 name: crypto-trade-plan
-description: Plano de trade para cripto (BTC, ETH, altcoins, perpétuos e spot) que incorpora o que o mercado de cripto tem de diferente — funding rate, open interest, clusters de liquidação, fluxo de ETFs, mercado 24/7 com fim de semana ilíquido, alavancagem e preço de liquidação, risco de exchange. Cobre intraday e swing em cripto. Use sempre que o trader mencionar bitcoin, BTC, ETH, ethereum, solana, altcoin, perp, perpétuo, funding, liquidação, alavancagem em cripto, "opero na Binance/Bybit/OKX/Hyperliquid", "como fica o BTC hoje/essa semana", "vale entrar em X", "estou alavancado 10x em...", ou pedir tamanho de posição e preço de liquidação. Inclui calculadora (scripts/crypto_calc.py) de tamanho, liquidação e custo de funding. Para ativos tradicionais use day-trade-plan ou swing-trade-plan.
+description: Plano de trade em cripto (BTC, ETH, altcoins, spot e perpétuos) com a camada que só existe ali (funding, open interest, liquidações, fluxo de ETF, mercado 24/7 com fim de semana fino, alavancagem, preço de liquidação em margem isolada e cruzada e risco de exchange). Três cenários com gatilho, stop, alvo com R e invalidação, e tamanho pelo risco (nunca pela alavancagem) com a conta aberta, via script ou passo a passo na conversa quando não der para rodar código. Use quando o trader citar bitcoin, ETH, solana, altcoin, perp, funding, liquidação, alavancagem, Binance, Bybit, OKX ou Hyperliquid, perguntar como fica o BTC hoje ou na semana, se vale entrar em X, qual o preço de liquidação, ou disser que está alavancado e quer revisar a posição. Para ativos tradicionais, o certo é um plano de day trade ou de swing.
 ---
 
 # Crypto Trade Plan
 
-Cripto pune dois tipos de trader: o que trata como ação (ignora funding, liquidação e o domingo) e o que trata como cassino (alavanca porque a exchange deixa). O plano serve para os dois: traz as variáveis que só existem aqui e força o tamanho a ser definido pelo risco, não pela alavancagem disponível.
+Cripto pune dois tipos de trader: o que trata como ação (ignora funding, liquidação e o domingo) e
+o que trata como cassino (alavanca porque a exchange deixa). O plano serve para os dois: traz as
+variáveis que só existem aqui e força o tamanho a ser definido pelo risco, não pela alavancagem
+disponível.
 
-Escreva em português do Brasil, direto, sem "to the moon" nem "vai zerar". Um plano de cripto tem os mesmos ossos de qualquer plano — tese, entrada, stop, alvo, tamanho, invalidação — mais uma camada de derivativos e de horário que você precisa cobrir.
+## Regras que valem em toda resposta
 
-## O que precisa vir do trader
+- Português do Brasil, direto, sem "to the moon" nem "vai zerar".
+- **Sem travessão na resposta**, nem o longo nem o curto. Use vírgula, dois-pontos, ponto ou
+  parênteses. Hífen só em intervalo de número.
+- **Nunca dá call.** Três cenários com gatilho e invalidação; a decisão é do trader.
+- **Nunca inventa número.** Preço, funding, OI e liquidação mudam a cada minuto: sem fonte, vira
+  "n/d, confira antes de entrar" ou placeholder nomeado. "Funding está alto" sem número e fonte
+  não entra.
+- **Conta aberta.** Tamanho, margem, liquidação, folga, funding e R aparecem com a conta escrita.
+
+## 1. O que precisa vir do trader
 
 | Informação | Essencial? | Se não vier |
 |---|---|---|
-| Ativo (BTC, ETH, SOL, par específico) | sim | pergunte; se disser só "cripto", assuma BTC e diga |
-| Spot ou perpétuo? Exchange? | não | assuma perpétuo USDT-margined e diga |
-| Risco por trade (USD ou % da conta) | sim | pergunte |
-| Horizonte (horas / dias / semanas) | não | pergunte em uma linha — define quanto funding pesa |
-| Alavancagem que pretende usar | não | calcule a necessária, não a máxima |
-| Níveis que ele vê / screenshot | não | placeholders; nunca invente preço |
-| Já está posicionado? | se for revisão | preço médio, tamanho, alavancagem, liquidação atual |
+| Ativo (BTC, ETH, SOL, par específico) | sim | pergunte; "cripto" sozinho, assuma BTC e diga |
+| Risco por trade (USD ou % da conta) | sim | pergunte; em %, peça o tamanho da conta |
+| Spot ou perpétuo? Exchange? | não | assuma perpétuo linear em USDT e diga |
+| Margem isolada ou cruzada | não | assuma isolada e diga; na cruzada, peça o saldo da conta de futuros |
+| Horizonte (horas, dias, semanas) | não | pergunte em uma linha: define quanto o funding pesa |
+| Alavancagem pretendida | não | calcule a necessária, não a máxima |
+| Taxa da exchange (taker) | não | sem taxa na conta e avise; ou peça o valor |
+| Níveis ou print | não | placeholders |
+| Já está posicionado? | se for revisão | preço médio, tamanho, alavancagem, modo de margem, liquidação na tela |
 
-Você não vê o gráfico nem o livro. Preço, funding, OI e liquidações mudam a cada minuto: busque na web ("BTC funding rate", "BTC open interest", "BTC liquidations today", "bitcoin ETF flows") ou peça ao trader que cole os números do Coinglass/exchange. Não escreva "funding está alto" sem número e fonte. Se não achou, escreva "funding: n/d — confira antes de entrar" e siga.
+## 2. Dados que mudam com o tempo
 
-## Como montar
+**Com busca na web:** preço, funding, OI, liquidações e fluxo de ETF ("BTC funding rate", "BTC
+open interest", "BTC liquidations today", "bitcoin ETF flows"), e a agenda macro da janela do
+trade. As referências foram conferidas em 07/11/2026; intervalo de funding, faixa de margem de
+manutenção e horários mudam por exchange, então reconfira quando o plano depender deles.
 
-### 1. Contexto em 3 linhas
+**Sem busca na web** (acontece no claude.ai com a busca desligada): avise em 1 linha ("Estou sem
+busca na web agora, então não confirmei preço, funding nem OI."), peça que o trader cole o preço
+e os números do Coinglass ou da exchange (print serve), e siga com "n/d" e placeholders.
 
-O que o BTC (e o ativo, se não for BTC) fez nas últimas 24h e na semana; o que o NQ e o DXY estão fazendo (cripto anda com risco global na maioria dos regimes); se houve liquidação grande recente (mercado "limpo" ou "lotado"). Para altcoin: a dominância do BTC está subindo ou caindo — isso define se a alt tem vento a favor.
+## 3. Print do gráfico (ou da tela da exchange)
 
-### 2. Camada de derivativos
+- **Todo preço tirado do print leva marca:** `(lido)` quando sai de rótulo do eixo ou de etiqueta
+  da plataforma; `(aprox.)` quando é interpolado entre rótulos.
+- **Nunca mais precisão do que o eixo dá.** Eixo de 1.000 em 1.000: "~61.500 (aprox.)", nunca
+  "61.487".
+- Número lido da tela da posição (liquidação, margem, funding) também leva `(lido)`, e vale mais
+  que a sua estimativa.
+- Eixo ilegível: descreva a estrutura e deixe níveis como placeholder.
 
-Tabela curta com o que você achou. Leia `references/derivativos.md` para interpretar cada linha.
+## 4. Como montar
+
+### Contexto (3 linhas)
+
+O que o BTC (e o ativo, se não for BTC) fez em 24h e na semana; o que NQ e DXY estão fazendo
+(cripto anda com risco global na maioria dos regimes); se houve liquidação grande recente
+(mercado "limpo" ou "lotado"). Altcoin: a dominância do BTC sobe ou cai.
+
+### Camada de derivativos
+
+Tabela curta com o que você achou (leitura de cada linha em `references/derivativos.md`):
 
 ```
 | Métrica | Valor | Leitura |
-| Funding (8h) | +0,04% | comprados pagando; mercado inclinado long |
-| OI | US$ 18,2 bi (↑ 6% em 24h) | dinheiro novo entrando na alta — sustento, mas alavancado |
-| Liquidações 24h | US$ 240 mi (80% shorts) | vendidos já limpos acima de 61k |
-| Clusters de liquidação | 58,8k (longs) / 62,5k (shorts) | imãs de pavio nos dois lados |
-| Basis perp/spot | +0,08% | normal |
-| Fluxo ETF (ontem) | +US$ 310 mi | demanda spot confirmando |
+| Funding (por cobrança, intervalo) | ... | ... |
+| OI (variação 24h) | ... | ... |
+| Liquidações 24h (lado) | ... | ... |
+| Clusters de liquidação | ... | ... |
+| Basis perp/spot | ... | ... |
+| Fluxo de ETF (último dia) | ... | ... |
 ```
 
-Conclua em uma frase: qual lado está vulnerável a squeeze. Isso não decide a direção do trade; decide onde o stop **não** pode ficar e qual cenário tem cascata a favor.
+Feche em uma frase: qual lado está vulnerável a cascata. Isso não escolhe direção; diz onde o stop
+**não** pode ficar e qual cenário tem combustível a favor.
 
-### 3. Agenda e horário
+### Agenda e relógio
 
 Cripto não fecha, mas tem relógio:
 
-- **Dados dos EUA (09:30 BRT) e FOMC** movem BTC como movem o NQ. Liste os da janela do trade (busque; `references/sessoes.md` tem os horários).
-- **Abertura de NY (10:30/11:30 BRT)** e **fechamento da CME de BTC (sexta 17:00 NY)** concentram volume; o gap da CME entre sexta e domingo é um imã conhecido.
-- **Fim de semana**: liquidez fina, spread aberto, movimento de 5–10% sem notícia. Se o trade atravessa o fim de semana, o tamanho precisa sobreviver a isso — diga o número.
-- **Funding settlement** (00:00, 08:00, 16:00 UTC = 21:00, 05:00, 13:00 BRT): preço costuma oscilar perto do horário quando o funding está extremo.
-- **Eventos do ativo**: desbloqueio de tokens, upgrade de rede, decisão regulatória, audiência, lançamento de ETF. Busque.
+- **Dados dos EUA e FOMC** mexem no BTC como no NQ. Se a skill `session-news-radar` estiver
+  instalada, ela faz a agenda completa. Se não, faça aqui mesmo assim: busque (ou peça) só os
+  eventos de impacto alto na janela do trade, com horário BRT (`references/sessoes.md`), e marque
+  a janela de risco de cada um.
+- **Abertura de Nova York** concentra volume (11:30 BRT no horário padrão americano, 10:30 no
+  verão de lá).
+- **CME:** os futuros de cripto da CME negociam 24/7 desde 29/05/2026. O "gap da CME" de fim de
+  semana deixou de se formar; gap antigo no gráfico é histórico, não ímã novo.
+- **Fim de semana:** liquidez fina, spread aberto, movimentos de vários por cento sem notícia. Se o
+  trade atravessa o fim de semana, o tamanho precisa sobreviver a isso: diga o número.
+- **Cobrança de funding:** em pares de 8h, 21:00, 05:00 e 13:00 BRT; alguns pares cobram a cada 4h
+  ou 1h, e a Hyperliquid de hora em hora. Com funding extremo o preço costuma oscilar perto do
+  horário.
+- **Eventos do ativo:** desbloqueio de tokens, upgrade de rede, decisão regulatória. Busque.
 
-### 4. Cenários
+### Cenários
 
-Três, como sempre: alta, baixa, lateral. Estrutura por cenário:
+Três, sempre: alta, baixa e lateral.
 
 ```
-CENÁRIO A — Alta
-Gatilho: [fechamento H4/D1 acima de X; ou reclaim de nível com OI subindo]
+CENÁRIO A (alta)
+Gatilho: [fechamento H4/D1 acima de X; ou retomada de nível com OI subindo]
 Entrada: [região]
 Stop: [além do cluster de liquidação, não dentro dele]
-Alvo 1 / Alvo 2: [níveis reais; cluster de liquidação do lado oposto é alvo legítimo]
-Invalidação: [o que mata a ideia: ex. fluxo de ETF vira negativo 3 dias seguidos; NQ perde suporte; funding vira negativo com OI subindo]
+Alvo 1 / Alvo 2: [níveis reais; cluster do lado oposto é alvo legítimo] (com R)
+Invalidação: [ex.: fluxo de ETF negativo 3 dias seguidos; NQ perde suporte;
+funding vira negativo com OI subindo]
 ```
 
-Em cripto, "gatilho" vale dobrado: o mercado pesca stops e rompimentos falsos com frequência maior que em ativos regulados. Prefira confirmação por fechamento de candle (H1/H4/D1) a toque de preço.
+Em cripto o gatilho vale dobrado: rompimento falso e caça de stop são frequentes. Prefira
+fechamento de candle (H1, H4, D1) a toque de preço. No lateral, diga como ele se parece e a ação
+(ficar fora, ou só nas bordas com tamanho menor).
 
-### 5. Tamanho, alavancagem e liquidação
+### Tamanho, alavancagem e liquidação
 
-Ordem obrigatória do raciocínio, porque a maioria faz ao contrário:
+Ordem obrigatória, porque a maioria faz ao contrário:
 
-1. **Risco** em USD (definido pelo trader).
-2. **Distância do stop** em % → **tamanho** da posição (`risco ÷ distância`). Isso é o notional. Pronto — a posição está definida.
-3. **Alavancagem** é só quanto de margem esse notional vai consumir. Escolha a menor que cabe na conta com folga; 2–5x cobre quase todo trade sensato.
-4. **Preço de liquidação** para essa alavancagem. Ele tem que ficar **além do stop com folga** (pelo menos metade da distância do stop). Se não fica, a alavancagem está alta demais — não o stop apertado demais.
-5. **Custo de funding** pelo horizonte, em R.
+1. **Risco** em dinheiro (definido pelo trader).
+2. **Distância do stop** → **quantidade** = risco ÷ (distância + taxa de ida e volta por moeda).
+   Isso define o notional. A posição está definida.
+3. **Alavancagem** é só quanta margem esse notional consome. A menor que cabe com folga; 2x a 5x
+   cobre quase todo trade sensato.
+4. **Liquidação** para essa alavancagem (isolada) ou para o saldo (cruzada). Tem que ficar **além
+   do stop**, com folga de pelo menos metade da distância do stop. Se não fica, a alavancagem está
+   alta (ou o saldo curto). **Nunca aperte o stop para resolver.**
+5. **Funding** pelo horizonte, em R.
 
-Rode `scripts/crypto_calc.py` com os números — ele devolve tamanho, liquidação, folga, funding e R dos alvos, e avisa quando a liquidação vem antes do stop. Copie a saída para o plano:
+Fórmulas completas em `references/derivativos.md`. Na cruzada, deixe claro: a alavancagem quase
+não muda a liquidação, quem muda é o saldo, e se liquidar vai o saldo inteiro.
 
-```
-python scripts/crypto_calc.py --risco 200 --entrada 60000 --stop 58500 --alav 5 --funding 0.04 --horas 48 --alvo 63000 --alvo 65500
-```
-
-Se o trader disser "vou de 20x", não discuta a alavancagem; mostre a liquidação a 20x ao lado do stop. O número convence mais que o sermão.
-
-### 6. Regras específicas de cripto para o plano
-
-- Stop **fora** de cluster de liquidação óbvio; se não der, aceite que ele será pescado e reduza o tamanho.
-- Ordem de stop na exchange (não mental) — cripto anda de madrugada.
-- Posição que atravessa fim de semana: tamanho pela volatilidade do domingo, não da terça.
-- Risco de exchange: não é o lugar para guardar o que não está em posição. Se a posição é grande em relação ao patrimônio, diga que o risco de contraparte entra na conta.
-- Altcoin: stop mais largo (volatilidade) e tamanho menor; se o BTC virar, a alt cai o dobro. O plano de altcoin sempre inclui "o que faço se o BTC perder X".
-- Sem revenge depois de liquidação. Liquidação é sinal de que o tamanho estava errado, não de que o mercado "deve" uma.
-
-### 7. Ficha final
+**Com execução de código:** rode o script da pasta `scripts/` desta skill e copie a saída para o
+plano:
 
 ```
-ATIVO | lado | perp/spot | exchange | horizonte
-Entrada: região | Stop: nível (−__%) | Liquidação @ __x: nível (folga __%)
-Tamanho: __ moedas ≈ US$ __ notional | Margem: US$ __ | Risco: US$ __ (__% da conta)
+python scripts/crypto_calc.py --risco 200 --entrada 60000 --stop 58500 --alav 5 \
+  --funding 0.04 --horas 48 --alvo 63000 --alvo 65500
+```
+
+Opções: `--lado short`, `--modo cruzada --saldo 3000`, `--taxa 0.05` (taker por lado, em %),
+`--intervalo 4` (horas entre cobranças de funding), `--mmr 0.005` (margem de manutenção da faixa),
+`--margem 2000` (margem disponível), `--contrato 0.001` (passo mínimo), `--funding=-0.01`
+(negativo).
+
+**Sem execução de código** (ou se o script falhar): faça a mesma conta na conversa, uma linha por
+passo, no formato abaixo, para o trader conferir:
+
+```
+Distância: |entrada - stop| = __ (__% da entrada)
+Quantidade: risco ÷ (distância + taxa × (entrada + stop)) = __ moedas (arredondado no passo: __)
+Notional: quantidade × entrada = __
+Margem usada (isolada): notional ÷ alavancagem = __
+Liquidação long: (entrada - margem ÷ quantidade) ÷ (1 - mmr) = __
+Liquidação short: (entrada + margem ÷ quantidade) ÷ (1 + mmr) = __
+Folga: |stop - liquidação| ÷ entrada = __% (mínimo: metade de __%)
+Funding: notional × taxa × (horas ÷ intervalo) = __ (= __R)
+Alvo: |alvo - entrada| ÷ distância = __R
+```
+
+Se o trader disser "vou de 20x", não discuta: mostre a liquidação a 20x ao lado do stop. O número
+convence mais que o sermão. E diga que a estimativa é aproximada: **o preço de liquidação que vale
+é o da tela da posição**.
+
+### Regras de cripto para o plano
+
+- Stop **fora** de cluster de liquidação óbvio; se não der, aceite que pode ser pescado e reduza.
+- Ordem de stop na exchange, não mental. Cripto anda de madrugada.
+- Atravessa fim de semana: tamanho pela volatilidade do domingo, não da terça.
+- Exchange não é cofre. Se a posição é grande em relação ao patrimônio, o risco de contraparte
+  entra na conta.
+- Altcoin: stop mais largo e tamanho menor. Se o BTC virar, a alt costuma cair mais. O plano de
+  altcoin sempre inclui "o que faço se o BTC perder X".
+- Sem revanche depois de liquidação. Liquidação mostra que o tamanho estava errado, não que o
+  mercado "deve" uma.
+
+## 5. Template de saída
+
+Cabe numa tela de celular com rolagem.
+
+```
+PLANO CRIPTO | [ATIVO] | [lado ou "avaliando"] | [perp/spot] | [exchange] | [horizonte]
+RESUMO: [até 3 linhas: o contexto, o lado vulnerável nos derivativos,
+o evento ou horário que pede cuidado]
+Fontes: [web / print / informado / sem web] | Suposições: [lista ou "nenhuma"]
+
+1. CONTEXTO
+2. DERIVATIVOS (tabela + 1 frase)
+3. AGENDA E RELÓGIO (BRT)
+4. CENÁRIOS (A alta, B baixa, C lateral)
+5. TAMANHO, ALAVANCAGEM E LIQUIDAÇÃO (conta passo a passo)
+6. FICHA
+ATIVO | lado | perp/spot | exchange | margem isolada/cruzada | horizonte
+Entrada: região | Stop: nível (-__%) | Liquidação @ __x: nível (folga __%)
+Tamanho: __ moedas ≈ __ notional | Margem: __ | Risco: __ (__% da conta)
 Alvo 1: __ (+__R) | Alvo 2: __ (+__R) | Funding estimado: __R
 Invalidação: [frase]
-Próximo evento: [data/hora BRT]
+Próximo evento: [data e hora BRT]
+
+Plano é hipótese, não previsão. Nada aqui é recomendação de investimento.
 ```
 
-## Revisão de posição aberta
+## 6. Conversa que continua
 
-Quando ele chega com "estou long 10x desde 61k": pergunte (ou busque) preço atual, liquidação atual, funding, e se há stop de verdade. Responda na ordem: onde está em R; a distância até a liquidação em %; se a tese ainda vale (e qual era); ação concreta (reduzir para N para afastar a liquidação, mover stop, sair). Se ele está a menos de 3% da liquidação sem stop, isso é a primeira frase da resposta, antes de qualquer análise.
+- **Posição aberta ("estou long 10x desde 61k")**: peça (ou busque) preço atual, liquidação na
+  tela, modo de margem, funding e se existe stop de verdade. Responda nesta ordem: onde está em R;
+  distância até a liquidação em %; se a tese ainda vale (e qual era); ação pelo plano (reduzir para
+  N para afastar a liquidação, pôr o stop que falta, sair). **Se está a menos de 3% da liquidação
+  sem stop, essa é a primeira frase da resposta**, antes de qualquer análise.
+- **Notícia nova ou movimento brusco**: confirme o fato (busca ou o que ele colar). Diga se
+  dispara alguma invalidação, se a cascata de liquidação mudou de lado e o que o plano manda. Fato
+  sem fonte não muda o plano.
+- **Funding virou ou disparou**: refaça só a linha do funding em R e diga se o custo passou de
+  0,2R para o horizonte que resta.
+- **"Mudou algo?" no meio do dia**: qual cenário está ativo, o que mudou nos derivativos e quanto
+  risco sobra. Não reescreva o plano inteiro.
+- **Foi liquidado ou tomou stop**: sem trade de recuperação. Ofereça olhar o que estava errado no
+  tamanho ou no stop.
 
-## O que degrada o plano
+## 7. O que degrada o plano
 
 - Tamanho definido pela alavancagem ("a corretora deixa 50x").
-- Stop em número redondo ou logo abaixo do fundo óbvio — é onde todo mundo está e onde a liquidez é caçada.
-- Ignorar funding em swing de mais de 3 dias.
-- "BTC vai bater 100k" como tese. Tese é mecanismo (fluxo, liquidez, estrutura), não preço-alvo de manchete.
-- Copiar posição de influenciador. Se a tese é "fulano disse", não há invalidação possível.
-
-Termine com: *Plano é hipótese, não previsão. Nada aqui é recomendação de investimento.*
+- Stop em número redondo ou logo abaixo do fundo óbvio, onde todo mundo está.
+- Funding ignorado em swing de mais de 3 dias.
+- "BTC vai bater 100k" como tese. Tese é mecanismo (fluxo, liquidez, estrutura), não manchete.
+- Copiar posição de influenciador. Se a tese é "fulano disse", não existe invalidação possível.
 
 ## Referências
 
-- `references/derivativos.md` — como ler funding, OI, liquidações, basis, ETF flows, dominância; fórmula de liquidação. Leia ao montar a seção 2 e a seção 5.
-- `references/sessoes.md` — horários em BRT dos dados e sessões que movem cripto via risco global.
-- `scripts/crypto_calc.py` — calculadora de tamanho, liquidação, folga e funding. Rode sempre na seção 5.
+- `references/derivativos.md`: funding, OI, liquidações, basis, ETF, dominância e as fórmulas de
+  tamanho, liquidação isolada e cruzada e funding (conferido em 07/11/2026). Leia nas seções de
+  derivativos e de tamanho.
+- `references/sessoes.md`: horários em BRT dos dados e sessões que mexem em cripto via risco
+  global (conferido em 07/11/2026).
+- `scripts/crypto_calc.py`: calculadora de tamanho, liquidação (isolada e cruzada), folga, funding
+  e R, com cada conta impressa. Rode sempre que a execução de código estiver disponível.
+
+## Exemplo de saída (ILUSTRATIVO, números genéricos)
+
+```
+PLANO CRIPTO | BTC | avaliando long | perp USDT | [exchange] | 2 dias
+RESUMO: Preço preso entre 58.500 e 61.000 há 3 dias. Funding positivo e OI
+subindo: longs lotados, então o stop do long não fica colado no fundo óbvio.
+CPI americano amanhã às 10:30 BRT pede tamanho que aguente a janela.
+Fontes: informado pelo trader | Suposições: margem isolada, sem taxa
+
+5. TAMANHO, ALAVANCAGEM E LIQUIDAÇÃO (cenário A, long)
+Distância: |60.000 - 58.500| = 1.500 (2,50% da entrada)
+Quantidade: 200 ÷ 1.500 = 0,1333 BTC | Notional: 0,1333 × 60.000 = 8.000
+Margem usada a 5x: 8.000 ÷ 5 = 1.600
+Liquidação: (60.000 - 1.600 ÷ 0,1333) ÷ (1 - 0,005) = 48.000 ÷ 0,995 = 48.241
+Folga: (58.500 - 48.241) ÷ 60.000 = 17,1% (mínimo: 1,25%) ok
+Funding: 8.000 × 0,04% × (48 ÷ 8) = 19,20 (= 0,10R)
+Alvo 1: 63.000 (3.000 ÷ 1.500 = 2,0R) | Alvo 2: 65.500 (5.500 ÷ 1.500 = 3,7R)
+
+6. FICHA
+BTC | long | perp | [exchange] | isolada | 2 dias
+Entrada: 59.800-60.200 | Stop: 58.500 (-2,5%) | Liquidação @ 5x: ~48.241 (folga 17,1%)
+Tamanho: 0,1333 BTC ≈ 8.000 | Margem: 1.600 | Risco: 200 (2% da conta)
+Alvo 1: 63.000 (+2,0R) | Alvo 2: 65.500 (+3,7R) | Funding estimado: 0,10R
+Invalidação: funding vira negativo com OI subindo, ou ETF com saída 3 dias seguidos
+
+Plano é hipótese, não previsão. Nada aqui é recomendação de investimento.
+```

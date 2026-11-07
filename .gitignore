@@ -3,3 +3,6 @@ _pdf/
 
 # oficina do PDF/cover do Gumroad (fontes com licenca propria, nao publica)
 _pdf-trader/
+
+# produto pago (Hotmart), fonte fora do repo publico
+_prompt-master/

@@ -41,7 +41,7 @@ O trabalho fora do gráfico, onde o day trade é ganho ou perdido:
 | 2 | **[Session News Radar](session-news-radar/)** | Busca e classifica as notícias/eventos de impacto **pro seu ativo** numa sessão, com sensibilidade por lado e janelas de risco | *"o que tem hoje pro dólar?"*, *"por que o BTC tá caindo?"* |
 | 3 | **[Swing Trade Plan](swing-trade-plan/)** | Plano de dias a semanas: tese em uma frase, catalisadores com data, stop estrutural, **invalidação separada do stop**, gestão, custos de carregar | *"swing em PETR4"*, *"estou carregando X, e agora?"* |
 | 4 | **[Crypto Trade Plan](crypto-trade-plan/)** | A camada que só existe em cripto: funding, OI, liquidações, fim de semana, com **calculadora de tamanho e preço de liquidação** | *"estou long 10x em BTC"*, *"vale entrar em ETH?"* |
-| 5 | **[Setup Backtest](setup-backtest/)** | Do setup vago às regras testáveis: critério de aprovação **antes** do teste, script de métricas + **Monte Carlo**, caça a vieses, veredito go/no-go | *"meu setup funciona?"*, *"analisa minha planilha"* |
+| 5 | **[Setup Backtest](setup-backtest/)** | Os números do teste: lê a planilha ou o CSV de trades (até print de planilha), calcula métricas em R, **Monte Carlo** e dentro × fora da amostra, e dá o veredito go/no-go contra o critério escrito antes. O desenho do método fica com a Backtest Honesto | *"analisa minha planilha"*, *"posso aumentar a mão?"* |
 
 **Como foram testadas:** cada uma rodou num cenário real (agenda de verdade, preço buscado na
 web, planilha de 64 trades), com e sem a skill, contra critérios de qualidade escritos antes.
@@ -102,20 +102,31 @@ transformam a hipótese em número. É a mesa inteira de uma operação, sem nin
 
 ## Instalação
 
-Cada skill é uma pasta com um `SKILL.md` (as cinco de plano trazem também `references/` e scripts).
-Dois caminhos:
+Cada skill é uma pasta com um `SKILL.md` (algumas trazem também `references/` e scripts).
+Três caminhos:
 
 ### Claude (claude.ai / app): planos pagos
-1. Baixe os `.zip` prontos na **[página de Releases](../../releases)** (ou compacte a pasta da skill).
-2. Em claude.ai: **Settings → Capabilities → Skills → Upload skill** e envie o ZIP.
-3. Repita por skill. Depois é só conversar, a skill dispara sozinha quando o pedido bate com ela.
+1. Baixe os `.zip` prontos na **[página de Releases](../../releases)**, pelo computador. **Não descompacte.**
+2. Em claude.ai: **Settings → Capabilities**. Ligue **Code execution and file creation** (as skills dependem disso).
+3. Na mesma tela, em **Skills → Upload skill**, envie um ZIP por vez. Depois é só conversar: a skill dispara sozinha quando o pedido combina com ela.
+
+> Os ZIPs da v1.x saíram com caminho em barra invertida e não abriam no Mac, no iPhone nem no upload do claude.ai. Desde a v2.0 eles são gerados por `tools/empacotar.mjs`, que valida cada skill e confere o ZIP lendo de volta. Baixou antes de 07/11/2026? Baixe de novo.
+
+### Sem Claude pago (Claude grátis, ChatGPT, Gemini, Grok)
+Cada release traz a **versão para colar** de cada skill (`<nome>.txt`): copie da linha `INÍCIO` até a linha `FIM` e cole como primeira mensagem de uma conversa nova, ou nas instruções de um Projeto (Claude), GPT (ChatGPT) ou Gem (Gemini).
 
 ### Claude Code (terminal / desktop)
 ```bash
 git clone https://github.com/aaegisengine/aegis-skills.git
 cp -r aegis-skills/{leitura,ondas,figuras,zonas,renko,autopsia,backtest,day-trade-plan,session-news-radar,swing-trade-plan,crypto-trade-plan,setup-backtest} ~/.claude/skills/
 ```
-Pronto, sem restart. Se quiser forçar uma, cite o nome: *"usa a day-trade-plan pra montar o plano de amanhã"*.
+Pronto, sem restart. Se quiser forçar uma, cite o nome: *"use a day-trade-plan pra montar o plano de amanhã"*.
+
+### Gerar os pacotes
+```bash
+node tools/empacotar.mjs           # valida as 12 e gera _dist/v2/ (zips, versões para colar e .docx)
+node tools/empacotar.mjs --checar  # só valida
+```
 
 ## Como tirar um print que a IA lê bem
 

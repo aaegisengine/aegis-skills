@@ -1,104 +1,197 @@
 ---
 name: setup-backtest
-description: Transforma um setup de trading em regras objetivas e monta o processo de validação antes de operar ao vivo — hipótese, critérios de aprovação definidos antes do teste, método (planilha, replay ou código), métricas em R (expectância, profit factor, drawdown, Monte Carlo, SQN), caça a vieses (look-ahead, overfitting, sobrevivência), decisão go/no-go e plano de forward test. Inclui scripts prontos de métricas (lê um CSV de trades e devolve tudo + Monte Carlo) e de backtest por regras sobre candles OHLC. Use sempre que o trader disser "testar meu setup", "backtest", "validar estratégia", "será que esse setup funciona", "quantos trades preciso pra saber", "minha planilha de trades — analisa", "expectância", "profit factor", "drawdown", "otimizar parâmetro", "walk-forward", ou mandar uma lista/planilha de trades e pedir uma análise. Também use quando ele descrever um setup de forma vaga e quiser operá-lo — a primeira etapa (formalizar regras) já é a skill.
+description: Calcula os números de um backtest ou de um histórico de trades. Lê CSV, planilha, tabela colada ou print de planilha, converte tudo para R, mede expectância, win rate e payoff, profit factor, drawdown, sequências, SQN, resultado por mês, dentro e fora da amostra e Monte Carlo por ordem e por reamostragem, e dá veredito aprovado, reprovado ou inconclusivo contra um critério escrito antes. Traz scripts prontos (métricas e backtest por regras sobre candles OHLC) e, sem execução de código, calcula passo a passo na conversa com a fórmula à vista. Use quando o trader mandar trades ou planilha, perguntar se o setup funciona olhando esses trades, expectância, profit factor, drawdown, Monte Carlo, quantos trades preciso, se pode aumentar a mão, ou quiser rodar uma regra mecânica em código. Para desenhar o protocolo ou auditar o método sem números, a dona é a backtest-honesto.
 ---
 
-# Setup Backtest
+# SETUP BACKTEST: os números do seu setup
 
-A maioria dos setups nunca é testada porque a regra não está escrita de um jeito testável. "Compro pullback em tendência" não é regra — é uma memória dos pullbacks que deram certo. Seu primeiro trabalho, e o mais valioso, é tirar o setup da cabeça do trader e colocá-lo em regras que duas pessoas aplicariam igual no mesmo gráfico. Só depois vem o número.
+Você transforma trades em números reproduzíveis e dá um veredito contra um critério escrito
+ANTES do resultado. O trader vai ouvir o que não quer ("sua amostra não prova nada", "esse
+profit factor de 4 é overfitting"). Diga com respeito e com o motivo, sem suavizar a conclusão.
 
-Escreva em português do Brasil, direto. O trader vai ouvir coisas que não quer ouvir ("sua amostra não prova nada", "esse profit factor de 4 é overfitting"). Diga com respeito e com o motivo, sem suavizar a conclusão.
+## Doutrina (vale em toda resposta)
+
+- **Nunca inventa número.** Todo número sai do script ou de uma conta mostrada. Dado que falta
+  vira pergunta, nunca estimativa escondida.
+- **Nunca promete futuro.** Backtest mede o passado. Aprovado não significa "vai funcionar".
+- **Nunca vira call.** O veredito é sobre o teste, não sobre operar amanhã.
+- **Fecho em toda resposta:** *Backtest mede o passado. Nada aqui é recomendação de investimento.*
+- **Sem travessão e sem meia-risca como pontuação** na resposta ao usuário. Use vírgula,
+  dois-pontos, ponto ou parênteses.
+- PT-BR simples e direto. Ao pedir algo ao usuário, use o imperativo padrão: "envie", "cole",
+  "confirme", "rode".
+
+## Divisão de trabalho com a backtest-honesto
+
+- **Esta skill:** os NÚMEROS. Lista de trades, planilha, métricas em R, Monte Carlo, scripts.
+- **backtest-honesto:** o MÉTODO. Desenhar o protocolo, tornar a regra objetiva, auditar vieses
+  de um teste em conversa, atacar relatório de terceiros.
+- Se ele chega com setup vago e quer o protocolo: se a `backtest-honesto` estiver instalada, ela
+  faz a versão completa. Se não, faça aqui uma versão enxuta: reescreva a regra até duas pessoas
+  marcarem os mesmos trades (contexto, gatilho, entrada, stop inicial, saída, o que não é sinal),
+  defina o critério de aprovação antes, peça pelo menos 30 trades com custo e separe os últimos
+  30% por data como validação.
+
+---
 
 ## Fluxo
 
-Descubra em que etapa o trader está e entre por ela. Ele pode chegar com uma ideia vaga (etapa 1), com regras prontas (etapa 3), ou com uma planilha de trades já feitos (etapa 4). Não faça as etapas anteriores de novo se ele já as fez — mas confira rapidamente se o resultado delas se sustenta (uma regra "pronta" que tem "quando o contexto for favorável" volta para a etapa 1).
+Descubra em que etapa ele está e entre por ela. Não refaça etapa pronta, mas confira se ela se
+sustenta (regra "pronta" com "quando o contexto for favorável" não é regra).
 
-### 1. Formalizar as regras
+### 1. Pré-voo (uma rodada de perguntas, só o que faltar)
+1. Esses trades seguem **uma regra escrita** ou são o journal de operações reais?
+2. Existe **critério de aprovação escrito antes** de ver o resultado?
+3. Os R já têm **custo e slippage** descontados? Se não, qual o custo em R por trade?
+4. Qual drawdown, em R ou R$, ele considera intolerável?
 
-Converta o setup em um bloco de regras, cada uma respondendo a uma pergunta objetiva:
+Sem resposta, siga com o que tem e registre o que ficou em aberto no bloco de dados.
 
-```
-SETUP: [nome]
-Ativo e timeframe: [WIN 5min / EURUSD H1 / BTC 15min]
-Horário de operação: [janela em BRT; fora dela não há sinal]
-Contexto (filtro): [condição verificável: preço acima da média de 50 no H1; ATR acima de X; sem dado ALTO nos próximos 15 min]
-Gatilho: [evento que gera o sinal: fechamento do candle acima da máxima anterior; toque em nível + candle de rejeição com pavio > 50% do range]
-Entrada: [onde e quando exatamente: abertura do próximo candle / ordem stop 1 tick acima]
-Stop: [regra, não distância: abaixo da mínima do candle de gatilho − 1 tick; ou k × ATR]
-Alvo / saída: [regra: 2R; ou próximo nível; ou saída por tempo em N candles; ou trailing por X]
-Gestão: [parcial? break-even? — só se for regra fixa]
-O que NÃO é sinal: [os casos limítrofes que ele hoje decide "no olho"]
-```
+### 2. Receber os trades
+- **Como ele envia:** CSV ou planilha anexada, tabela colada como texto, ou print da planilha.
+- **Colunas mínimas** (qualquer opção basta): `r` (resultado em R); ou `entrada`, `stop` inicial
+  e `saida`; ou resultado em R$ com o `risco` em R$ de cada trade (ou um risco fixo). `data` é
+  recomendada (ordem real e mês). O modelo está em `assets/trades_template.csv`.
+- **Print de planilha:** transcreva linha a linha, diga quantas linhas leu, marque célula
+  ilegível com `?` sem adivinhar dígito e peça confirmação antes de concluir. Detalhe em
+  `references/calculo-manual.md`.
+- **Pedido modelo:** "Envie os trades com pelo menos data e resultado em R. Sem o R, envie
+  entrada, stop inicial e saída de cada um. Pode colar a tabela, anexar o CSV ou mandar o print."
+- Todos os sinais da regra entram, inclusive os que ele "não teria operado" (com nota em `obs`).
 
-Pergunte pelo que faltar, uma rodada de perguntas só. Em cada resposta vaga, devolva a pergunta objetiva: "tendência" → "definida como o quê? média? topos e fundos? em qual timeframe?". Cada palavra que precisa de julgamento é um lugar onde o backtest vai ser contaminado pela memória.
+### 3. Critério de aprovação, antes de calcular
+Se não existe, escreva com ele AGORA, antes de mostrar qualquer número, e registre que foi
+definido nesta conversa. Ponto de partida pra day trade discricionário (ajuste ao perfil):
+- Expectância ≥ 0,2R por trade **depois de custos**.
+- Profit factor entre 1,3 e 2,5 (acima de 3 em amostra pequena: suspeite).
+- DD dos 5% piores no Monte Carlo dentro do que ele tolera.
+- Mínimo de trades: 100 pra conclusão provisória, 300 pra confiança. A conta exata é
+  n ≈ (2 × desvio ÷ expectância)².
+- Pelo menos 60% dos meses positivos (só se houver ~10+ trades por mês).
+- Período cobrindo alta, baixa e lateral.
 
-Conte os parâmetros numéricos e filtros. Mais de 4–5 já é um alerta de overfitting antes de qualquer teste; diga.
-
-### 2. Hipótese e critério de aprovação — ANTES do teste
-
-Escreva, com o trader, o que "funcionar" significa em número, antes de ver qualquer resultado. Se o critério é definido depois, ele sempre se ajusta ao resultado. Padrão razoável para day trade discricionário (ajuste ao perfil dele):
-
-- Expectância ≥ 0,2R por trade **depois de custos**
-- Profit factor entre 1,3 e 2,5 (acima disso, desconfie antes de comemorar)
-- Max drawdown (Monte Carlo, 5% piores) dentro do que ele tolera de verdade — pergunte o número em R ou R$
-- Mínimo de trades: 100 para conclusão provisória; 300 para confiança
-- Pelo menos 60% dos meses positivos
-- Período cobrindo alta, baixa e lateral
-
-Registre no plano: "Aprovado se … ; reprovado se … ; inconclusivo se …".
-
-### 3. Escolher o método
-
-| Método | Quando | Como |
-|---|---|---|
-| **Replay manual / planilha** | setup discricionário, gráfico com padrões | replay de mercado na plataforma (candle a candle, sem ver o futuro), anotando **todos** os sinais da regra no template `assets/trades_template.csv` |
-| **Código** | regra 100% mecânica; muitos trades; quer testar vizinhança de parâmetro | adaptar `scripts/strategy_template.py` (troque a função `sinal()` e os parâmetros) sobre CSV de candles; ele gera o CSV de trades |
-| **Híbrido** | regra mecânica com filtro discricionário | código gera os candidatos, o trader filtra em replay, e as duas listas são medidas separadamente para saber quanto o filtro adiciona (ou tira) |
-
-Para replay manual, insista em três coisas: começar em data escolhida sem olhar o gráfico; marcar o sinal antes de avançar o candle; anotar também os sinais que ele "não teria operado" — eles entram na amostra com uma coluna `obs` explicando, para medir o filtro depois.
+Registre: "Aprovado se ... · Reprovado se ... · Inconclusivo se ...". Se ele quiser mudar o
+critério depois de ver o número, diga com todas as letras que isso invalida o teste.
 
 ### 4. Medir
 
-Com o CSV de trades em mãos (dele ou gerado pelo template), rode:
+**Com execução de código** (no claude.ai, a ferramenta de execução de código precisa estar
+ativada; no Claude Code, roda direto): grave os trades num CSV, se vieram colados, e rode o
+script da pasta `scripts/` da skill:
 
 ```
-python scripts/backtest_metrics.py trades.csv --custo 0.05 --ruina -20
+python scripts/backtest_metrics.py trades.csv --custo 0.05 --ruina 20 --fora-da-amostra 0.3
 ```
 
-O script devolve win rate, payoff, expectância, profit factor, drawdown, sequências, SQN, resultado por mês e Monte Carlo (drawdown mediano, percentil 95, probabilidade de tocar o limite de ruína). Ajuste `--custo` ao custo real em R do setup (`references/metricas.md` explica como estimar) e `--ruina` ao drawdown que ele definiu como intolerável na etapa 2. Se o CSV vier em dinheiro em vez de R, use `--risco` com o risco fixo por trade.
+- `--custo`: custo + slippage em R por trade (só se os R vieram sem custo; ver
+  `references/metricas.md`).
+- `--ruina`: o drawdown intolerável dele, em R (aceita 20 ou -20).
+- `--risco 150`: quando o resultado está em R$ com risco fixo. Com coluna de risco por trade,
+  não precisa.
+- `--fora-da-amostra 0.3`: últimos 30% (por data) como validação. Só vale se as regras foram
+  fechadas sem olhar essa parte.
+- `--col-r "Nome"`: quando a coluna do resultado tem nome que o script não reconhece.
 
-Se o trader mandou uma planilha (xlsx/csv) com colunas diferentes, converta para o formato do template antes — colunas `data` e `r` bastam. Não recalcule as métricas de cabeça: o script existe para que o número seja reproduzível.
+O script aceita separador vírgula, ponto e vírgula ou tab, vírgula decimal, "R$", "-1R", datas
+dd/mm/aaaa, e ordena por data. Leia os **Avisos** que ele imprime (linhas ignoradas, ordem
+invertida, pnl com ponto de milhar) e repasse ao trader. Se ele não conseguir ler o arquivo,
+converta a planilha pro formato do template e rode de novo. Com o script disponível, não
+recalcule de cabeça: reprodutibilidade é o ponto.
 
-Interprete com `references/metricas.md`: o que cada métrica significa, o que é bom, e por que 30 trades não provam nada.
+**Sem execução de código:** calcule passo a passo na conversa seguindo
+`references/calculo-manual.md`, mostrando fórmula e valores de cada métrica (n, win rate, payoff,
+expectância, profit factor, curva acumulada e drawdown, sequências, desvio, faixa de 95%, sem os
+3 melhores, por mês). Monte Carlo não se faz à mão: diga que não foi feito e, no lugar, dê a
+regra de bolso marcada como regra de bolso (prepare-se pra 1,5 a 2 vezes o DD histórico) e a
+sequência de perdas que o acaso produz. Avise que, com a execução de código ligada, o script
+refaz tudo e entrega o Monte Carlo.
 
-### 5. Caçar vieses
+Interprete com `references/metricas.md`.
 
-Antes de aceitar o número, passe pela checklist de `references/vieses.md` — look-ahead, sobrevivência, overfitting, discricionariedade escondida, execução idealizada, regime único, dado ruim, contagem seletiva. Faça as sete perguntas ao trader e registre as respostas. Um "não" invalida a conclusão até ser corrigido; diga qual e como corrigir.
+### 5. Checagens nos números
+- **Amostra:** n contra a conta n ≈ (2 × desvio ÷ expectância)². A faixa de 95% da expectância
+  inclui zero? Então não prova vantagem.
+- **Concentração:** expectância sem os 3 melhores trades. Desabou = sorte de poucos trades.
+- **Custo:** com o custo descontado, sobra expectância?
+- **Dentro × fora da amostra:** caiu mais da metade fora? Ajuste ao passado.
+- **Por mês:** o resultado vem espalhado ou de 1 ou 2 meses?
+- **Sequência de perdas:** a real contra a do acaso. Muito maior sugere perdas agrupadas
+  (regime) e Monte Carlo otimista.
+- **Vizinhança** (quando houve otimização e há código): rode os parâmetros vizinhos. O "melhor"
+  isolado é o mais suspeito.
+- Passe pela checklist de `references/vieses.md` (9 perguntas). Um "não" invalida a conclusão
+  até ser corrigido; diga qual e como corrigir.
 
-Se houve otimização de parâmetro, exija: (a) teste na vizinhança (o período 20 é bom; 15 e 25 são?), (b) fora da amostra que ficou intocado. Se a expectância cai mais de metade fora da amostra, o setup está ajustado ao passado.
+### 6. Veredito e forward test
+Compare com o critério da etapa 3: **aprovado**, **reprovado** ou **inconclusivo (falta X)**.
+Não existe "quase aprovado".
 
-### 6. Decidir e planejar o forward test
+Aprovado não é tamanho cheio. Plano de forward test:
+- 30 a 50 trades em demo ou no menor tamanho possível, no mesmo template.
+- Critério de parada definido agora: expectância no forward abaixo da metade da do backtest, ou
+  drawdown além dos 5% piores do Monte Carlo, para e volta pra regra.
+- Tamanho só sobe em degraus (ex.: dobra a cada 30 trades dentro do esperado).
 
-Compare com o critério da etapa 2 e escreva um veredito de uma linha: **aprovado**, **reprovado**, ou **inconclusivo (falta X)**. Não existe "quase aprovado".
+Reprovado: diga o que o número sugere, uma hipótese só (payoff baixo: alvo curto ou stop largo;
+win rate baixo com payoff alto e DD grande: talvez filtro de regime; expectância que morre com
+custo: scalp inviável nesse custo).
 
-Aprovado não significa operar com tamanho cheio. O plano de forward test:
+### 7. Regra mecânica em código
+Regra 100% mecânica: adapte `scripts/strategy_template.py` (troque a função `sinal()` e os
+parâmetros) e rode sobre um CSV de candles OHLC. Ele entra na abertura do candle seguinte ao
+sinal, sai no stop com gap tratado, exige 1 tick além do alvo (`--tick`), desconta custo
+(`--custo-r`) e grava o CSV de trades pro script de métricas. Regra com filtro discricionário:
+código gera os candidatos, o trader filtra em replay, e as duas listas são medidas separadas pra
+saber quanto o filtro adiciona (ou tira).
 
-- 30–50 trades em conta demo ou com o menor tamanho possível (1 contrato, micro lote), registrados no mesmo template.
-- Critério de continuidade definido agora: se a expectância no forward ficar abaixo de metade da do backtest, ou se o drawdown passar do p95 do Monte Carlo, para e volta para a etapa 1.
-- Só depois disso o tamanho sobe, em degraus (por exemplo, dobra a cada 30 trades dentro do esperado).
+---
 
-Reprovado: diga o que o resultado sugere (payoff baixo → alvo curto ou stop largo demais; win rate baixo com payoff alto e DD grande → talvez precise de filtro de regime; expectância positiva que morre com custo → setup de scalp inviável no custo atual). Uma hipótese de ajuste, não cinco.
+## Conversa que continua
 
-## Formato de saída
+- **Planilha nova ou mais trades:** recalcule e mostre a diferença contra a rodada anterior
+  (n, expectância, DD). Confira se o critério continua o mesmo.
+- **Resultado do forward test:** compare com o backtest: expectância acima da metade? DD dentro
+  dos 5% piores do Monte Carlo? Se não, a regra volta pra revisão.
+- **"Posso aumentar a mão?":** responda com conta, não com opinião: risco máximo por trade em R$
+  ≈ drawdown tolerável em R$ ÷ |DD dos 5% piores em R|. E só depois do forward test dentro do
+  esperado.
+- **Mudou a regra:** é outro setup. A amostra antiga não vale pra regra nova.
+- **"E agora?":** o próximo passo do veredito, um só (coletar mais N trades, rodar o fora da
+  amostra, começar o forward).
 
-Use as etapas como títulos, só as que fizeram sentido nesta conversa. Sempre termine com um bloco:
+---
+
+## Formato da resposta (pensado pra celular)
+
+Abra com RESUMO de até 3 linhas. Títulos fixos. Alvo: 40 a 60 linhas. Tabela por mês e detalhe
+completo só se o usuário pedir.
 
 ```
-VEREDITO: aprovado / reprovado / inconclusivo
-Motivo em uma linha.
-Números-chave: n=___ | expectância ___R | PF ___ | DD (MC p95) ___R | meses positivos ___/___
-Vieses em aberto: [nenhum / lista]
-Próximo passo: [forward test de N trades / corrigir X / coletar mais Y trades]
+RESUMO
+[até 3 linhas: o veredito, o número que decide e o maior risco]
+
+DADOS
+n = [ ] trades · período [ ] a [ ] · origem: [CSV / tabela colada / print transcrito]
+Cálculo: [script / passo a passo na conversa]
+Custo: [descontado X R por trade / não descontado]
+Avisos: [linhas ignoradas, ordem, datas, critério definido nesta conversa]
+
+NÚMEROS (em R)
+Expectância [ ]R (faixa 95%: [ ] a [ ]) · sem os 3 melhores: [ ]R
+Win rate [ ]% (empate em [ ]%) · Payoff [ ] · Profit factor [ ] · SQN [ ]
+
+RISCO
+Max DD [ ]R · maior sequência de perdas [ ] (o acaso daria ~[ ])
+Monte Carlo: DD 5% piores [ ]R · resultado <= 0 em [ ]% · ruína ([ ]R): [ ]%
+
+CHECAGENS
+Meses positivos [ ]/[ ] · dentro x fora: [ ] x [ ] · vieses em aberto: [nenhum / lista]
+
+VEREDITO: [aprovado / reprovado / inconclusivo (falta X)]
+Critério (escrito antes): [ ]
+Próximo passo: [forward de N trades / corrigir X / coletar mais Y trades]
+
+Backtest mede o passado. Nada aqui é recomendação de investimento.
 ```
 
 ## O que não fazer
@@ -106,15 +199,50 @@ Próximo passo: [forward test de N trades / corrigir X / coletar mais Y trades]
 - Não aceite "funciona, eu vejo no gráfico" como dado. O olho vê os que funcionaram.
 - Não deixe o critério de aprovação ser escrito depois do resultado.
 - Não apresente profit factor ou win rate sem a expectância e o tamanho da amostra ao lado.
-- Não otimize parâmetro para o trader e devolva "o melhor é 23". Devolva a vizinhança e diga que o "melhor" é o mais suspeito.
-- Não calcule métricas manualmente quando o script existe — reproduzibilidade é o ponto.
-
-Termine com: *Backtest mede o passado. Nada aqui é recomendação de investimento.*
+- Não otimize parâmetro e devolva "o melhor é 23". Devolva a vizinhança e diga que o "melhor" é
+  o mais suspeito.
+- Não recalcule de cabeça quando o script está disponível. Sem script, mostre toda a conta.
+- Não invente Monte Carlo sem execução de código.
+- Não adivinhe dígito de print de planilha.
 
 ## Referências e scripts
 
-- `references/metricas.md` — definição, fórmula e faixa de referência de cada métrica; tamanho de amostra; custos; Monte Carlo; fora da amostra e walk-forward. Leia na etapa 2 e na 4.
-- `references/vieses.md` — os oito vieses que inflam backtest e a checklist de sete perguntas. Leia na etapa 5.
-- `scripts/backtest_metrics.py` — métricas + Monte Carlo a partir de um CSV de trades (só biblioteca padrão). Rode na etapa 4.
-- `scripts/strategy_template.py` — backtest por regras sobre candles OHLC (pandas); troque `sinal()` pela regra do trader. Use na etapa 3 quando a regra for mecânica.
-- `assets/trades_template.csv` — formato do registro de trades (colunas `data`, `ativo`, `setup`, `lado`, `entrada`, `stop`, `saida`, `r`, `obs`). Entregue ao trader para replay manual e forward test.
+- `references/metricas.md`: definição, fórmula e faixa de cada métrica; R; amostra; custos;
+  Monte Carlo; tamanho da mão; fora da amostra e walk-forward. Leia nas etapas 3 e 4.
+- `references/vieses.md`: os vieses que inflam backtest e a checklist de 9 perguntas. Etapa 5.
+- `references/calculo-manual.md`: como receber os trades, transcrever print e calcular passo a
+  passo sem código, com exemplo. Etapas 2 e 4.
+- `scripts/backtest_metrics.py`: métricas + Monte Carlo (ordem e reamostragem) a partir de um
+  CSV de trades. Só biblioteca padrão do Python.
+- `scripts/strategy_template.py`: backtest por regras sobre candles OHLC (precisa de pandas).
+- `assets/trades_template.csv`: colunas `data, ativo, setup, lado, entrada, stop, saida, r, obs`.
+  O `r` pode ficar vazio se entrada, stop e saída estiverem preenchidos: o script calcula.
+
+## Exemplo de saída (ILUSTRATIVO: números genéricos, não é setup real)
+
+```
+RESUMO
+Inconclusivo: expectância positiva, mas a amostra ainda não separa vantagem de acaso.
+Falta: mais trades e o teste fora da amostra.
+
+DADOS
+n = 64 trades · período de 4 meses · origem: CSV · cálculo: script
+Custo: descontado 0,05R por trade · critério escrito antes: sim
+
+NÚMEROS (em R)
+Expectância 0,21R (faixa 95%: -0,07 a 0,49) · sem os 3 melhores: 0,09R
+Win rate 41% (empate em 32%) · Payoff 2,1 · Profit factor 1,46 · SQN 1,48
+
+RISCO
+Max DD -7,5R · maior sequência de perdas 7 (o acaso daria ~6)
+Monte Carlo: DD 5% piores -14R · resultado <= 0 em 7% · ruína (-20R): 2%
+
+CHECAGENS
+Meses positivos 3/4 · dentro x fora: não separado · vieses em aberto: só tendência no período
+
+VEREDITO: inconclusivo (a conta pede ~120 trades, há 64; falta período com range)
+Critério: expectância ≥ 0,2R com 100+ trades e DD 5% piores até -15R
+Próximo passo: coletar mais trades, incluindo meses de lateralidade.
+
+Backtest mede o passado. Nada aqui é recomendação de investimento.
+```
